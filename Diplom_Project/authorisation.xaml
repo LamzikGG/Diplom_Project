@@ -1,0 +1,77 @@
+﻿<Window x:Class="Diplom_Project.authorisation"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Авторизация" Height="800" Width="780"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid Background="Black">
+        <!-- Блок авторизации (без эффектов) -->
+        <Border Width="380" 
+                Height="420" 
+                Background="White" 
+                CornerRadius="15"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Right"
+                Margin="40">
+
+            <StackPanel Margin="20" VerticalAlignment="Center">
+                <!-- Заголовок -->
+                <TextBlock Text="Авторизация" 
+                           FontSize="24" 
+                           FontWeight="SemiBold"
+                           Foreground="#333333"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,20"/>
+
+                <!-- Поле логина -->
+                <TextBlock Text="Логин" 
+                           Margin="5,0" 
+                           FontSize="14"
+                           Foreground="#555555"/>
+                <TextBox x:Name="txtLogin" 
+                         Height="35" 
+                         Margin="5,0,5,10"
+                         Padding="5"
+                         FontSize="14"
+                         BorderBrush="#CCCCCC"/>
+
+                <!-- Поле пароля -->
+                <TextBlock Text="Пароль" 
+                           Margin="5,10,5,0" 
+                           FontSize="14"
+                           Foreground="#555555"/>
+                <PasswordBox x:Name="txtPassword" 
+                             Height="35" 
+                             Margin="5,0,5,20"
+                             Padding="5"
+                             FontSize="14"
+                             BorderBrush="#CCCCCC"/>
+
+                <!-- Кнопка входа -->
+                <Button x:Name="btnLogin" 
+                        Content="Войти"
+                        Click="LoginButton"
+                        Height="40" 
+                        Margin="5,0,5,10"
+                        Background="#444444"
+                        Foreground="White"
+                        FontSize="16"
+                        FontWeight="Bold"
+                        BorderThickness="0"
+                        Cursor="Hand"/>
+
+                <!-- Ссылка на регистрацию -->
+                <TextBlock HorizontalAlignment="Center">
+                    <Hyperlink x:Name="linkRegister" 
+                              TextDecorations="None"
+                              Foreground="#444444"
+                              Click="Button_in_Registration">
+                        Зарегистрироваться
+                    </Hyperlink>
+                </TextBlock>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

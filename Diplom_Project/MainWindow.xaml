@@ -1,0 +1,101 @@
+﻿<Window x:Class="Diplom_Project.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Diplom_Project"
+        mc:Ignorable="d"
+        Title="Главная страница" Height="600" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Background="#FF0F0F0F">
+        <Grid.Resources>
+            <!-- Стиль для кнопок с изображениями -->
+            <Style x:Key="ImageButtonStyle" TargetType="Button">
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="Transparent"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Padding" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}"
+                                    CornerRadius="4">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Opacity" Value="0.8"/>
+                    </Trigger>
+                    <Trigger Property="IsPressed" Value="True">
+                        <Setter Property="Opacity" Value="0.6"/>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Шапка с логотипом -->
+        <Border Grid.Row="0" Background="#FF1A1A1A" Padding="20">
+            <Image Source="/Image/image (1).jpeg" Width="106" Height="100" 
+                   HorizontalAlignment="Left"/>
+        </Border>
+        <Grid Grid.Row="1" Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <UniformGrid Grid.Row="0" Rows="1" Columns="3" 
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                        Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
+                    <StackPanel VerticalAlignment="Center">
+                        <Button Style="{StaticResource ImageButtonStyle}" 
+                                Click="Image1_Click">
+                            <Image Source="/Image/image2.jpg" Stretch="UniformToFill"
+                                   Width="220" Height="220"/>
+                        </Button>
+                        <TextBlock Text="Трасы" HorizontalAlignment="Center" 
+                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Блок 2 -->
+                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                        Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
+                    <StackPanel VerticalAlignment="Center">
+                        <Button Style="{StaticResource ImageButtonStyle}" 
+                                Click="Image2_Click">
+                            <Image Source="/Image/image3.jpg" Stretch="UniformToFill"
+                                   Width="220" Height="220"/>
+                        </Button>
+                        <TextBlock Text="Аренда жилья" HorizontalAlignment="Center" 
+                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Блок 3 -->
+                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                        Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
+                    <StackPanel VerticalAlignment="Center">
+                        <Button Style="{StaticResource ImageButtonStyle}" 
+                                Click="Image3_Click">
+                            <Image Source="/Image/image (2).jpeg" Stretch="UniformToFill"
+                                   Width="220" Height="220"/>
+                        </Button>
+                        <TextBlock Text="Аренда экипировки" HorizontalAlignment="Center" 
+                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+        </Grid>
+    </Grid>
+</Window>
