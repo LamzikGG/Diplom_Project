@@ -18,14 +18,17 @@ namespace Diplom_Project
 
         private void Image2_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Выбрана аренда жилья", "Уведомление",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
+            var arenda_zshilia = new arenda_zhilya();
+            arenda_zshilia.Show();
+            this.Close();
         }
 
         private void Image3_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Выбрана аренда экипировки", "Уведомление",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
+            var arenda_ekipirovki = new arenda_ekipa();
+            arenda_ekipirovki.Show();
+            this.Close();
+
         }
     }
 }

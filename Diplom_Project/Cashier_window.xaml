@@ -1,0 +1,35 @@
+﻿<Window x:Class="Diplom_Project.Views.CashierWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Кассир" Height="450" Width="800"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <TabControl>
+            <!-- Вкладка: Аренда жилья -->
+            <TabItem Header="Аренда жилья">
+                <DataGrid x:Name="BookingsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="*" />
+                        <DataGridTextColumn Header="Жильё ID" Binding="{Binding AccommodationId}" Width="*" />
+                        <DataGridTextColumn Header="Дата заезда" Binding="{Binding CheckIn}" Width="*" />
+                        <DataGridTextColumn Header="Дата выезда" Binding="{Binding CheckOut}" Width="*" />
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding TotalPrice}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!-- Вкладка: Аренда экипировки -->
+            <TabItem Header="Аренда экипировки">
+                <DataGrid x:Name="RentalsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID пользователя" Binding="{Binding UserId}" Width="*" />
+                        <DataGridTextColumn Header="Оборудование ID" Binding="{Binding EquipmentId}" Width="*" />
+                        <DataGridTextColumn Header="Начало аренды" Binding="{Binding StartTime}" Width="*" />
+                        <DataGridTextColumn Header="Конец аренды" Binding="{Binding EndTime}" Width="*" />
+                        <DataGridTextColumn Header="Сумма" Binding="{Binding TotalPrice}" Width="*" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

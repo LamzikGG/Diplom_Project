@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Npgsql;
+using Diplom_Project.Services;
 
 namespace Diplom_Project
 {

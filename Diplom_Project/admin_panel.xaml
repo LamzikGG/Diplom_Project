@@ -1,12 +1,10 @@
-﻿<Window x:Class="Diplom_Project.admin_panel.xaml"
+﻿<Window x:Class="Diplom_Project.Views.AdminPanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Diplom_Project"
-        mc:Ignorable="d"
-        Title="Window1" Height="450" Width="800">
-    <Grid>
-
+        Title="Админ-панель" Height="500" Width="800">
+    <Grid Margin="10">
+        <DataGrid x:Name="UsersDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" ItemsSource="{Binding}" Margin="0,0,0,40"/>
+        <Button Content="Обновить" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="100" Height="30" Click="Refresh_Click"/>
+        <Button Content="Сохранить изменения" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="150" Height="30" Click="Save_Click"/>
     </Grid>
 </Window>

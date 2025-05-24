@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 
-namespace Diplom_Project
+namespace Diplom_Project.Services
 {
     public static class Database
     {

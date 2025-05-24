@@ -13,7 +13,7 @@
                 BorderBrush="#DDDDDD"
                 BorderThickness="1"
                 VerticalAlignment="Center"
-                HorizontalAlignment="Right"
+                HorizontalAlignment="Center"
                 Margin="40">
 
             <StackPanel Margin="20" VerticalAlignment="Center">

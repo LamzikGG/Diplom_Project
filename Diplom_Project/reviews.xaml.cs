@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Diplom_Project
 {
     /// <summary>
-    /// Логика взаимодействия для trasi.xaml
+    /// Логика взаимодействия для reviews.xaml
     /// </summary>
-    public partial class trasi : Window
+    public partial class reviews : Window
     {
-        public trasi()
+        public reviews()
         {
             InitializeComponent();
         }
