@@ -101,7 +101,7 @@
                               Foreground="White" 
                               FontSize="24" 
                               FontWeight="Bold"
-                              Margin="20,0,0,0"
+                              Margin="250,0,0,0"
                               VerticalAlignment="Center"
                               HorizontalAlignment="Center"/>
                               

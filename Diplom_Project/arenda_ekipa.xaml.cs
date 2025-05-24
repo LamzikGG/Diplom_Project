@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace Diplom_Project
 {
-    /// <summary>
-    /// Логика взаимодействия для arenda_ekipa.xaml
-    /// </summary>
     public partial class arenda_ekipa : Window
     {
         public arenda_ekipa()
