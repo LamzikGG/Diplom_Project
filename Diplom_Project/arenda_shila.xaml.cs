@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using Diplom_Project.Services;
+using Npgsql;
 
 namespace Diplom_Project
 {
@@ -12,6 +14,7 @@ namespace Diplom_Project
             public int Id { get; set; }
             public string Name { get; set; }
             public decimal Price { get; set; }
+            public int AccommodationId { get; set; }
         }
 
         private List<CartItem> cartItems = new List<CartItem>();
@@ -29,21 +32,21 @@ namespace Diplom_Project
             var button = sender as Button;
             var parent = button.Parent as StackPanel;
 
-            // Получаем информацию о товаре из карточки
             string name = ((TextBlock)parent.Children[1]).Text;
             decimal price = decimal.Parse(button.Tag.ToString());
+            int accommodationId = int.Parse(button.CommandParameter?.ToString() ?? "0");
 
             var item = new CartItem
             {
                 Id = nextItemId++,
                 Name = name,
-                Price = price
+                Price = price,
+                AccommodationId = accommodationId
             };
 
             cartItems.Add(item);
             totalPrice += item.Price;
             UpdateCartDisplay();
-
             StatusText.Text = $"{item.Name} добавлен в корзину";
         }
 
@@ -51,14 +54,12 @@ namespace Diplom_Project
         {
             var button = sender as Button;
             int id = (int)button.Tag;
-
             var item = cartItems.Find(x => x.Id == id);
             if (item != null)
             {
                 cartItems.Remove(item);
                 totalPrice -= item.Price;
                 UpdateCartDisplay();
-
                 StatusText.Text = $"{item.Name} удален из корзины";
             }
         }
@@ -68,56 +69,48 @@ namespace Diplom_Project
             CartListView.ItemsSource = null;
             CartListView.ItemsSource = cartItems;
             TotalPriceText.Text = $"{totalPrice} руб.";
-
             CheckoutButton.IsEnabled = cartItems.Count > 0;
         }
 
         private void CheckoutButton_Click(object sender, RoutedEventArgs e)
         {
-            string orderDetails = "Ваша заявка:\n\n";
-            foreach (var item in cartItems)
-            {
-                orderDetails += $"- {item.Name}: {item.Price} руб.\n";
-            }
-            orderDetails += $"\nИтого: {totalPrice} руб.";
-
-            MessageBox.Show(orderDetails, "Подтверждение заявки",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // Отправка данных продавцу
-            SendOrderToSeller();
-
-            // Очистка корзины после оформления
-            cartItems.Clear();
-            totalPrice = 0;
-            nextItemId = 1;
-            UpdateCartDisplay();
-
-            StatusText.Text = "Ваша заявка отправлена продавцу!";
-        }
-
-        private void SendOrderToSeller()
-        {
             try
             {
-                // Здесь должна быть реальная логика отправки заявки
-                // Например, сохранение в базу данных или отправка email
+                using (var conn = Database.GetConnection())
+                {
+                    conn.Open();
 
-                // Пример логирования (можно заменить на реальную отправку)
-                string logMessage = $"Новая заявка от {DateTime.Now}\n";
-                logMessage += $"Количество позиций: {cartItems.Count}\n";
-                logMessage += $"Общая сумма: {totalPrice} руб.\n";
+                    foreach (var item in cartItems)
+                    {
+                        string sql = @"
+                            INSERT INTO bookings (user_id, accommodation_id, check_in, check_out, total_price)
+                            VALUES (@userId, @accommodationId, CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day', @price)";
+                        using (var cmd = new NpgsqlCommand(sql, conn))
+                        {
+                            cmd.Parameters.AddWithValue("userId", GetCurrentUserId());
+                            cmd.Parameters.AddWithValue("accommodationId", item.AccommodationId);
+                            cmd.Parameters.AddWithValue("price", item.Price);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
 
-                // В реальном приложении здесь будет код для сохранения или отправки данных
-                System.Diagnostics.Debug.WriteLine(logMessage);
+                MessageBox.Show("Заявка успешно отправлена!", "Успех");
+                cartItems.Clear();
+                totalPrice = 0;
+                nextItemId = 1;
+                UpdateCartDisplay();
+                StatusText.Text = "Ваша заявка отправлена продавцу!";
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при отправке заявки: {ex.Message}",
-                              "Ошибка",
-                              MessageBoxButton.OK,
-                              MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при оформлении: {ex.Message}", "Ошибка");
             }
+        }
+
+        private int GetCurrentUserId()
+        {
+            return 1; // Заменить на реальный ID
         }
     }
 }
