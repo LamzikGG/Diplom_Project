@@ -92,7 +92,7 @@ namespace Diplom_Project
 
         private int GetCurrentUserId()
         {
-            return 1; // Заменить на реальный ID
+            return 1;
         }
     }
 }

@@ -168,6 +168,9 @@
       <DependentUpon>reviews.xaml</DependentUpon>
     </Compile>
     <Compile Include="models\UserModel.cs" />
+    <Compile Include="routes.xaml.cs">
+      <DependentUpon>routes.xaml</DependentUpon>
+    </Compile>
     <Page Include="arenda_ekipa.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -209,6 +212,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="reviews.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="routes.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -255,6 +262,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\image %282%29.jpeg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Image\unnamed.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

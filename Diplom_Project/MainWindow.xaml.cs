@@ -16,13 +16,12 @@ namespace Diplom_Project
         {
             InitializeComponent();
         }
-
         private void Image1_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show("Выбраны трассы", "Уведомление",
-                          MessageBoxButton.OK, MessageBoxImage.Information);
+            routes go_see_routes = new routes();
+            go_see_routes.Show();
+            this.Close();
         }
-
         private void Image2_Click(object sender, RoutedEventArgs e)
         {
             var arenda_zshilia = new arenda_zhilya();
