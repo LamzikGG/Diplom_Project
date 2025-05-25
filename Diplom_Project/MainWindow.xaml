@@ -43,10 +43,21 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка с логотипом -->
-        <Border Grid.Row="0" Background="#FF1A1A1A" Padding="20">
-            <Image Source="/Image/image (1).jpeg" Width="106" Height="100" 
-                   HorizontalAlignment="Left"/>
+        <!-- Шапка с логотипом и заголовком -->
+        <Border Grid.Row="0" Background="#FF1A1A1A" Padding="15">
+            <StackPanel Orientation="Horizontal">
+                <Border Width="50" Height="50" CornerRadius="5" Background="White" 
+                MouseLeftButtonDown="Logo_Click" Cursor="Hand">
+                    <Image Source="/Image/image (1).jpeg" Stretch="Uniform"/>
+                </Border>
+                <TextBlock Text="Аренда жилья" 
+                  Foreground="White" 
+                  FontSize="24" 
+                  FontWeight="Bold"
+                  Margin="250,0,0,0"
+                  VerticalAlignment="Center"
+                  HorizontalAlignment="Center"/>
+            </StackPanel>
         </Border>
         <Grid Grid.Row="1" Margin="20">
             <Grid.RowDefinitions>

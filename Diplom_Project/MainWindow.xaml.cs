@@ -1,10 +1,17 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace Diplom_Project
 {
     public partial class MainWindow : Window
     {
+        private void Logo_Click(object sender, MouseButtonEventArgs e)
+        {
+            authorisation go_authorisation = new authorisation();
+            go_authorisation.Show();
+            this.Close();
+        }
         public MainWindow()
         {
             InitializeComponent();

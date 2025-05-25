@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Diplom_Project.Services;
 using Npgsql;
 
@@ -9,6 +10,12 @@ namespace Diplom_Project
 {
     public partial class arenda_ekipa : Window
     {
+        private void Logo_Click(object sender, MouseButtonEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
         private List<RentalItem> cartItems = new List<RentalItem>();
         private decimal totalPrice = 0;
         private int nextItemId = 1;
