@@ -9,8 +9,8 @@
                 <Grid>
                     <DataGrid x:Name="UsersDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,0,0,40"/>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Button Content="Обновить" Width="100" Height="30" Click="Refresh_Click" Margin="0,0,10,0"/>
-                        <Button Content="Сохранить изменения" Width="150" Height="30" Click="Save_Click"/>
+                        <Button Content="Обновить" Width="100" Height="30" Click="RefreshUsers_Click" Margin="0,0,10,0"/>
+                        <Button Content="Сохранить изменения" Width="150" Height="30" Click="SaveUsers_Click"/>
                     </StackPanel>
                 </Grid>
             </TabItem>
@@ -18,30 +18,36 @@
             <!-- Вкладка изменения цен на оборудование -->
             <TabItem Header="Цены на оборудование">
                 <Grid>
-                    <DataGrid x:Name="EquipmentDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,0,0,40" ItemsSource="{Binding}">
+                    <DataGrid x:Name="EquipmentDataGrid" AutoGenerateColumns="False" CanUserAddRows="True" Margin="0,0,0,40" ItemsSource="{Binding}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding EquipmentId}" Width="*"/>
                             <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="*"/>
                             <DataGridTextColumn Header="Бренд" Binding="{Binding Brand}" Width="*"/>
                             <DataGridTextColumn Header="Цена" Binding="{Binding Price}" Width="*" IsReadOnly="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Сохранить изменения" Width="150" Height="30" Click="SaveEquipmentPrices_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button Content="Добавить" Width="100" Height="30" Click="AddEquipment_Click" Margin="0,0,10,10"/>
+                        <Button Content="Удалить" Width="100" Height="30" Click="DeleteEquipment_Click" Margin="0,0,10,10"/>
+                        <Button Content="Сохранить" Width="100" Height="30" Click="SaveEquipment_Click" Margin="0,0,10,10"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
             <!-- Вкладка изменения цен на жильё -->
             <TabItem Header="Цены на жильё">
                 <Grid>
-                    <DataGrid x:Name="AccommodationsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,0,0,40" ItemsSource="{Binding}">
+                    <DataGrid x:Name="AccommodationsDataGrid" AutoGenerateColumns="False" CanUserAddRows="True" Margin="0,0,0,40" ItemsSource="{Binding}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding AccommodationId}" Width="*"/>
                             <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
                             <DataGridTextColumn Header="Адрес" Binding="{Binding Address}" Width="*"/>
                             <DataGridTextColumn Header="Цена за ночь" Binding="{Binding PricePerNight}" Width="*" IsReadOnly="False"/>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Button Content="Сохранить изменения" Width="150" Height="30" Click="SaveAccommodationPrices_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button Content="Добавить" Width="100" Height="30" Click="AddAccommodation_Click" Margin="0,0,10,10"/>
+                        <Button Content="Удалить" Width="100" Height="30" Click="DeleteAccommodation_Click" Margin="0,0,10,10"/>
+                        <Button Content="Сохранить" Width="100" Height="30" Click="SaveAccommodationPrices_Click" Margin="0,0,10,10"/>
+                    </StackPanel>
                 </Grid>
             </TabItem>
 
