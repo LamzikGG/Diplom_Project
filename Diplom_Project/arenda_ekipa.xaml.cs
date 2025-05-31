@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,14 +11,55 @@ using Npgsql;
 
 namespace Diplom_Project
 {
-    public partial class arenda_ekipa : Window
+    public partial class arenda_ekipa : Window, INotifyPropertyChanged
     {
-        private ObservableCollection<RentalItem> CartItems { get; set; }
+        private ObservableCollection<RentalItem> _cartItems = new ObservableCollection<RentalItem>();
+        private decimal _totalPrice;
+        private string _statusMessage;
+
+        public ObservableCollection<RentalItem> CartItems
+        {
+            get => _cartItems;
+            set
+            {
+                _cartItems = value;
+                OnPropertyChanged(nameof(CartItems));
+                UpdateTotalPrice();
+            }
+        }
+
+        public decimal TotalPrice
+        {
+            get => _totalPrice;
+            set
+            {
+                _totalPrice = value;
+                OnPropertyChanged(nameof(TotalPrice));
+            }
+        }
+
+        public string StatusMessage
+        {
+            get => _statusMessage;
+            set
+            {
+                _statusMessage = value;
+                OnPropertyChanged(nameof(StatusMessage));
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public arenda_ekipa()
         {
             InitializeComponent();
+            DataContext = this;
             LoadEquipmentFromDatabase();
+        }
+
+        protected virtual void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         private void LoadEquipmentFromDatabase()
@@ -51,8 +94,7 @@ namespace Diplom_Project
                             var image = new Image
                             {
                                 Source = new BitmapImage(new Uri("/Image/ski.png", UriKind.Relative)),
-                                Height = 100,
-                                Stretch = Stretch.Uniform
+                                Style = Resources["EquipmentImageStyle"] as Style
                             };
                             stackPanel.Children.Add(image);
 
@@ -60,7 +102,7 @@ namespace Diplom_Project
                             var brandText = new TextBlock
                             {
                                 Text = brand,
-                                Style = Resources["EquipmentTextStyle"] as Style
+                                Style = Resources["EquipmentTitleStyle"] as Style
                             };
                             stackPanel.Children.Add(brandText);
 
@@ -76,7 +118,7 @@ namespace Diplom_Project
                             var priceText = new TextBlock
                             {
                                 Text = $"{price} руб./день",
-                                Style = Resources["EquipmentTextStyle"] as Style
+                                Style = Resources["EquipmentPriceStyle"] as Style
                             };
                             stackPanel.Children.Add(priceText);
 
@@ -84,12 +126,9 @@ namespace Diplom_Project
                             var rentButton = new Button
                             {
                                 Content = "Арендовать",
-                                Margin = new Thickness(0, 10, 0, 0),
-                                Padding = new Thickness(5),
-                                Background = Brushes.DarkGray,
-                                Foreground = Brushes.White,
-                                Tag = price.ToString(),
-                                CommandParameter = id.ToString()
+                                Style = Resources["RentButtonStyle"] as Style,
+                                Tag = price,
+                                CommandParameter = id
                             };
                             rentButton.Click += RentButton_Click;
                             stackPanel.Children.Add(rentButton);
@@ -102,7 +141,7 @@ namespace Diplom_Project
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка загрузки экипировки: {ex.Message}");
+                StatusMessage = $"Ошибка загрузки экипировки: {ex.Message}";
             }
         }
 
@@ -111,68 +150,88 @@ namespace Diplom_Project
             var button = sender as Button;
             var parent = button.Parent as StackPanel;
 
-            string name = ((TextBlock)parent.Children[2]).Text;
-            decimal price = decimal.Parse(button.Tag.ToString());
-            int equipmentId = int.Parse(button.CommandParameter?.ToString() ?? "0");
+            string name = ((TextBlock)parent.Children[1]).Text + " " + ((TextBlock)parent.Children[2]).Text;
+            decimal price = (decimal)button.Tag;
+            int equipmentId = (int)button.CommandParameter;
 
             var item = new RentalItem
             {
-                Id = nextItemId++,
+                Id = CartItems.Any() ? CartItems.Max(x => x.Id) + 1 : 1,
                 Name = name,
                 Price = price,
                 EquipmentId = equipmentId
             };
 
-            if (CartItems == null)
-            {
-                CartItems = new ObservableCollection<RentalItem>();
-            }
-
             CartItems.Add(item);
-            ShowConfirmationDialog(item);
+            StatusMessage = $"Добавлено: {item.Name}";
         }
 
-        private void ShowConfirmationDialog(RentalItem item)
+        private void RemoveFromCart_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show($"Подтвердите аренду: {item.Name}, {item.Price} руб.", "Подтверждение",
-                                MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+            var button = sender as Button;
+            int id = (int)button.Tag;
+
+            var itemToRemove = CartItems.FirstOrDefault(x => x.Id == id);
+            if (itemToRemove != null)
             {
-                SaveRentalToDatabase(item);
-                MessageBox.Show("Аренда оформлена!", "Успех");
+                CartItems.Remove(itemToRemove);
+                StatusMessage = $"Удалено: {itemToRemove.Name}";
             }
         }
-
-        private void SaveRentalToDatabase(RentalItem item)
+        private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
+
+        private void UpdateTotalPrice()
+        {
+            TotalPrice = CartItems.Sum(x => x.Price);
+        }
+
+        private void ConfirmRentButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (!CartItems.Any())
+            {
+                StatusMessage = "Корзина пуста!";
+                return;
+            }
+
             try
             {
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    string sql = @"
-                        INSERT INTO rentals (user_id, equipment_id, start_time, end_time, total_price)
-                        VALUES (@userId, @equipmentId, CURRENT_TIMESTAMP, NULL, @price)";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    foreach (var item in CartItems)
                     {
-                        cmd.Parameters.AddWithValue("userId", GetCurrentUserId());
-                        cmd.Parameters.AddWithValue("equipmentId", item.EquipmentId);
-                        cmd.Parameters.AddWithValue("price", item.Price);
-                        cmd.ExecuteNonQuery();
+                        string sql = @"
+                            INSERT INTO rentals (user_id, equipment_id, start_time, end_time, total_price)
+                            VALUES (@userId, @equipmentId, CURRENT_TIMESTAMP, NULL, @price)";
+                        using (var cmd = new NpgsqlCommand(sql, conn))
+                        {
+                            cmd.Parameters.AddWithValue("userId", GetCurrentUserId());
+                            cmd.Parameters.AddWithValue("equipmentId", item.EquipmentId);
+                            cmd.Parameters.AddWithValue("price", item.Price);
+                            cmd.ExecuteNonQuery();
+                        }
                     }
+
+                    CartItems.Clear();
+                    StatusMessage = "Аренда успешно оформлена!";
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка сохранения аренды: {ex.Message}");
+                StatusMessage = $"Ошибка оформления аренды: {ex.Message}";
             }
         }
 
         private int GetCurrentUserId()
         {
-            return 1; // Заменить на реальный ID пользователя
+            // Здесь должна быть логика получения ID текущего пользователя
+            return 1; // Временное значение
         }
-
-        private int nextItemId = 1;
     }
 
     public class RentalItem

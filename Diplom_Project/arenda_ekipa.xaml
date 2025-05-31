@@ -4,51 +4,197 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Аренда экипировки" Height="600" Width="800"
-        WindowStartupLocation="CenterScreen">
-    <Grid Background="#FF0F0F0F">
-        <Grid.Resources>
-            <!-- Стиль для карточек экипировки -->
-            <Style x:Key="EquipmentCardStyle" TargetType="Border">
-                <Setter Property="Background" Value="#FF1A1A1A"/>
-                <Setter Property="CornerRadius" Value="8"/>
-                <Setter Property="Padding" Value="10"/>
-                <Setter Property="Margin" Value="10"/>
-                <Setter Property="Width" Value="180"/>
-                <Setter Property="Height" Value="220"/>
-            </Style>
-            <!-- Стиль для текста в карточках -->
-            <Style x:Key="EquipmentTextStyle" TargetType="TextBlock">
-                <Setter Property="Foreground" Value="White"/>
-                <Setter Property="FontSize" Value="14"/>
-                <Setter Property="TextWrapping" Value="Wrap"/>
-                <Setter Property="HorizontalAlignment" Value="Center"/>
-                <Setter Property="Margin" Value="0,5,0,0"/>
-            </Style>
-        </Grid.Resources>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        Title="Аренда экипировки" Height="600" Width="1000"
+        WindowStartupLocation="CenterScreen"
+        Background="#FF0F0F0F">
 
-        <!-- Заголовок -->
-        <TextBlock Grid.Row="0" Text="Выберите экипировку для аренды" 
-                   HorizontalAlignment="Center" FontSize="18" Foreground="White" Margin="10"/>
+    <Window.Resources>
+        <!-- Стили для карточек и элементов -->
+        <Style x:Key="EquipmentCardStyle" TargetType="Border">
+            <Setter Property="Background" Value="#FF252525"/>
+            <Setter Property="CornerRadius" Value="10"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="15"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="280"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="3" Color="#40000000"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-        <!-- Основной контент - список экипировки -->
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <WrapPanel x:Name="EquipmentWrapPanel" HorizontalAlignment="Center" Margin="10"/>
-        </ScrollViewer>
+        <Style x:Key="EquipmentImageStyle" TargetType="Image">
+            <Setter Property="Stretch" Value="UniformToFill"/>
+            <Setter Property="Height" Value="120"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="VerticalAlignment" Value="Top"/>
+        </Style>
 
-        <!-- Подвал с кнопкой подтверждения -->
-        <Border Grid.Row="2" Background="#FF1A1A1A" Padding="10">
-            <Button Content="Подтвердить аренду" 
-                    HorizontalAlignment="Right" 
-                    Padding="20,5" 
-                    Background="#FF3A3A3A" 
-                    Foreground="White"
-                    FontWeight="Bold"/>
+        <Style x:Key="EquipmentTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10,15,10,5"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="EquipmentPriceStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FF3A6EA5"/>
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="RentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FF3A6EA5"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="15,5"/>
+            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="5">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF4D8FD6"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Основной контент -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок -->
+            <Border Grid.Row="0" Background="#FF1A1A1A" Padding="15">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Border Width="50" Height="50" CornerRadius="5" Background="White" 
+                        MouseLeftButtonDown="Logo_Click" Cursor="Hand">
+                        <Image Source="/Image/image (1).jpeg" Stretch="Uniform"/>
+                    </Border>
+                    <TextBlock Text="Аренда экипировки" 
+                   Foreground="White" 
+                   FontSize="24" 
+                   FontWeight="Bold"
+                   Margin="20,0,0,0"
+                   VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Список экипировки -->
+            <ScrollViewer Grid.Row="1" 
+                         VerticalScrollBarVisibility="Auto"
+                         HorizontalScrollBarVisibility="Disabled"
+                         Padding="10">
+                <WrapPanel x:Name="EquipmentWrapPanel" 
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Top"/>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Панель корзины -->
+        <Border Grid.Column="1" Background="#FF1A1A1A" Padding="15">
+            <StackPanel>
+                <TextBlock Text="Ваша корзина" 
+                           Foreground="White" 
+                           FontSize="20" 
+                           FontWeight="Bold"
+                           Margin="0,0,0,15"/>
+
+                <ListView x:Name="CartListView" 
+                          ItemsSource="{Binding CartItems}"
+                          Height="300"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,5"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Margin="0,5">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="{Binding Name}" 
+                                               Foreground="White"
+                                               FontWeight="SemiBold"/>
+                                    <TextBlock Text="{Binding Price, StringFormat='{}{0} руб./день'}" 
+                                               Foreground="#AAAAAA"/>
+                                </StackPanel>
+                                <Button Grid.Column="1" 
+                                        Content="✕" 
+                                        Foreground="Red"
+                                        Background="Transparent"
+                                        BorderThickness="0"
+                                        Padding="5,0"
+                                        Cursor="Hand"
+                                        Click="RemoveFromCart_Click"
+                                        Tag="{Binding Id}"/>
+                            </Grid>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+
+                <Separator Background="#333" Margin="0,10"/>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Итого: " 
+                               Foreground="White"
+                               FontSize="16"
+                               VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TotalPriceText" 
+                               Text="{Binding TotalPrice, StringFormat='{}{0} руб.'}" 
+                               Foreground="#FF3A6EA5"
+                               FontSize="18"
+                               FontWeight="Bold"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <Button x:Name="ConfirmRentButton"
+                        Content="Подтвердить аренду"
+                        Style="{StaticResource RentButtonStyle}"
+                        Margin="0,20,0,0"
+                        Cursor="Hand"
+                        Click="ConfirmRentButton_Click"/>
+
+                <TextBlock x:Name="StatusText"
+                           Text="{Binding StatusMessage}" 
+                           Foreground="#AAAAAA"
+                           FontSize="12"
+                           Margin="0,10,0,0"
+                           TextWrapping="Wrap"/>
+            </StackPanel>
         </Border>
     </Grid>
 </Window>
