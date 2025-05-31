@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Diplom_Project.Services;
 using Npgsql;
 
@@ -10,20 +11,6 @@ namespace Diplom_Project
 {
     public partial class arenda_zhilya : Window
     {
-        private void Logo_Click(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow mainWindow = new MainWindow();
-            mainWindow.Show();
-            this.Close();
-        }
-        public class CartItem
-        {
-            public int Id { get; set; }
-            public string Name { get; set; }
-            public decimal Price { get; set; }
-            public int AccommodationId { get; set; }
-        }
-
         private List<CartItem> cartItems = new List<CartItem>();
         private decimal totalPrice = 0;
         private int nextItemId = 1;
@@ -31,7 +18,98 @@ namespace Diplom_Project
         public arenda_zhilya()
         {
             InitializeComponent();
-            UpdateCartDisplay();
+            LoadAccommodationsFromDatabase();
+        }
+
+        private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
+            this.Close();
+        }
+
+        private void LoadAccommodationsFromDatabase()
+        {
+            var wrapPanel = HousingItemsPanel;
+            if (wrapPanel == null) return;
+
+            try
+            {
+                using (var conn = Database.GetConnection())
+                {
+                    conn.Open();
+                    string sql = "SELECT accommodation_id, name, address, price_per_night FROM accommodations";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            int id = reader.GetInt32(0);
+                            string name = reader.GetString(1);
+                            string address = reader.GetString(2);
+                            decimal price = reader.GetDecimal(3);
+
+                            // Создаем карточку
+                            var border = new Border
+                            {
+                                Style = Resources["HousingCardStyle"] as Style
+                            };
+                            var stackPanel = new StackPanel();
+
+                            // Картинка
+                            var image = new Image
+                            {
+                                Source = new BitmapImage(new Uri("/Images/hotel.jpg", UriKind.Relative)),
+                                Height = 150,
+                                Stretch = Stretch.UniformToFill
+                            };
+                            stackPanel.Children.Add(image);
+
+                            // Название
+                            var nameText = new TextBlock
+                            {
+                                Text = name,
+                                Style = Resources["CardTitleStyle"] as Style
+                            };
+                            stackPanel.Children.Add(nameText);
+
+                            // Адрес
+                            var addressText = new TextBlock
+                            {
+                                Text = address,
+                                Style = Resources["CardDescriptionStyle"] as Style
+                            };
+                            stackPanel.Children.Add(addressText);
+
+                            // Цена
+                            var priceText = new TextBlock
+                            {
+                                Text = $"{price} руб./ночь",
+                                Style = Resources["CardPriceStyle"] as Style
+                            };
+                            stackPanel.Children.Add(priceText);
+
+                            // Кнопка добавления в корзину
+                            var rentButton = new Button
+                            {
+                                Content = "Добавить в корзину",
+                                Style = Resources["RentButtonStyle"] as Style,
+                                Tag = price.ToString(),
+                                CommandParameter = id.ToString()
+                            };
+                            rentButton.Click += AddToCart_Click;
+                            stackPanel.Children.Add(rentButton);
+
+                            border.Child = stackPanel;
+                            wrapPanel.Children.Add(border);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки жилья: {ex.Message}");
+            }
         }
 
         private void AddToCart_Click(object sender, RoutedEventArgs e)
@@ -52,7 +130,7 @@ namespace Diplom_Project
             };
 
             cartItems.Add(item);
-            totalPrice += item.Price;
+            totalPrice += price;
             UpdateCartDisplay();
             StatusText.Text = $"{item.Name} добавлен в корзину";
         }
@@ -86,7 +164,6 @@ namespace Diplom_Project
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-
                     foreach (var item in cartItems)
                     {
                         string sql = @"
@@ -101,7 +178,6 @@ namespace Diplom_Project
                         }
                     }
                 }
-
                 MessageBox.Show("Заявка успешно отправлена!", "Успех");
                 cartItems.Clear();
                 totalPrice = 0;
@@ -117,7 +193,15 @@ namespace Diplom_Project
 
         private int GetCurrentUserId()
         {
-            return 1; // Заменить на реальный ID
+            return 1; // Заменить на реальный ID пользователя
         }
+    }
+
+    public class CartItem
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int AccommodationId { get; set; }
     }
 }

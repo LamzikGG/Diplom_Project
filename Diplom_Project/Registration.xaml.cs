@@ -14,15 +14,20 @@ namespace Diplom_Project
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)
         {
-            string login = txtLogin.Text;
-            string password = txtPassword.Password;
-            string confirmPassword = txtConfirmPassword.Password;
+            string firstName = txtFirstName.Text.Trim();
+            string lastName = txtLastName.Text.Trim();
+            string phone = txtPhone.Text.Trim();
+            string login = txtLogin.Text.Trim();
+            string password = txtPassword.Password.Trim();
+            string confirmPassword = txtConfirmPassword.Password.Trim();
 
             if (string.IsNullOrWhiteSpace(login) ||
                 string.IsNullOrWhiteSpace(password) ||
-                string.IsNullOrWhiteSpace(confirmPassword))
+                string.IsNullOrWhiteSpace(confirmPassword) ||
+                string.IsNullOrWhiteSpace(firstName) ||
+                string.IsNullOrWhiteSpace(lastName))
             {
-                MessageBox.Show("Все поля должны быть заполнены!");
+                MessageBox.Show("Все обязательные поля должны быть заполнены!");
                 return;
             }
 
@@ -38,12 +43,19 @@ namespace Diplom_Project
                 {
                     conn.Open();
 
-                    string sql = "INSERT INTO users (username, password_hash) VALUES (@login, crypt(@password, gen_salt('bf')))";
+                    string sql = @"
+                INSERT INTO users 
+                (username, password_hash, first_name, last_name, phone) 
+                VALUES 
+                (@login, crypt(@password, gen_salt('bf')), @firstName, @lastName, @phone)";
 
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@login", login);
                         cmd.Parameters.AddWithValue("@password", password);
+                        cmd.Parameters.AddWithValue("@firstName", firstName);
+                        cmd.Parameters.AddWithValue("@lastName", lastName);
+                        cmd.Parameters.AddWithValue("@phone", phone ?? (object)DBNull.Value); // если телефон пустой — NULL
 
                         int rowsAffected = cmd.ExecuteNonQuery();
                         if (rowsAffected > 0)
@@ -58,7 +70,6 @@ namespace Diplom_Project
             }
             catch (NpgsqlException ex)
             {
-                // Проверяем текст ошибки на наличие дубликата логина
                 if (ex.Message.Contains("duplicate key value violates unique constraint") ||
                     ex.Message.Contains("уже существует"))
                 {

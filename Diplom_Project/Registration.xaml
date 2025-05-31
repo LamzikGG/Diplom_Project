@@ -6,7 +6,7 @@
 
     <Grid Background="Black">
         <Border Width="380" 
-                Height="420" 
+                Height="540" 
                 Background="White" 
                 CornerRadius="15"
                 BorderBrush="White"
@@ -16,52 +16,72 @@
                 Margin="40"
                 Padding="20">
 
-            <StackPanel>
-                <!-- Заголовок -->
-                <TextBlock Text="Регистрация" 
-                           FontSize="20"
-                           FontWeight="Bold"
-                           HorizontalAlignment="Center"
-                           Margin="0,0,0,20"/>
+            <ScrollViewer>
+                <StackPanel>
+                    <!-- Заголовок -->
+                    <TextBlock Text="Регистрация" 
+                               FontSize="20"
+                               FontWeight="Bold"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,20"/>
 
-                <!-- Поле для логина -->
-                <TextBlock Text="Логин:" Margin="0,0,0,5"/>
-                <TextBox x:Name="txtLogin" 
-                         Height="30"
-                         Margin="0,0,0,15"/>
-
-                <!-- Поле для пароля -->
-                <TextBlock Text="Пароль:" Margin="0,0,0,5"/>
-                <PasswordBox x:Name="txtPassword" 
+                    <!-- Поле для имени -->
+                    <TextBlock Text="Имя:" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtFirstName" 
                              Height="30"
                              Margin="0,0,0,15"/>
 
-                <!-- Поле для подтверждения пароля -->
-                <TextBlock Text="Подтвердите пароль:" Margin="0,0,0,5"/>
-                <PasswordBox x:Name="txtConfirmPassword" 
+                    <!-- Поле для фамилии -->
+                    <TextBlock Text="Фамилия:" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtLastName" 
                              Height="30"
-                             Margin="0,0,0,20"/>
+                             Margin="0,0,0,15"/>
 
-                <!-- Кнопка регистрации -->
-                <Button x:Name="btnRegister" 
-                        Content="Зарегистрироваться"
-                        Height="35"
-                        Background="Gray"
-                        Foreground="White"
-                        FontWeight="Bold"
-                        Click="btnRegister_Click"/>
+                    <!-- Поле для телефона -->
+                    <TextBlock Text="Телефон:" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtPhone" 
+                             Height="30"
+                             Margin="0,0,0,15"/>
 
-                <!-- Кнопка возврата -->
-                <Button x:Name="btnBack" 
-                        Content="Назад"
-                        Height="30"
-                        Margin="0,15,0,0"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        Foreground="gray"
-                        Click="btnBack_Click"
-                        />
-            </StackPanel>
+                    <!-- Поле для логина -->
+                    <TextBlock Text="Логин:" Margin="0,0,0,5"/>
+                    <TextBox x:Name="txtLogin" 
+                             Height="30"
+                             Margin="0,0,0,15"/>
+
+                    <!-- Поле для пароля -->
+                    <TextBlock Text="Пароль:" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="txtPassword" 
+                                 Height="30"
+                                 Margin="0,0,0,15"/>
+
+                    <!-- Поле для подтверждения пароля -->
+                    <TextBlock Text="Подтвердите пароль:" Margin="0,0,0,5"/>
+                    <PasswordBox x:Name="txtConfirmPassword" 
+                                 Height="30"
+                                 Margin="0,0,0,20"/>
+
+                    <!-- Кнопка регистрации -->
+                    <Button x:Name="btnRegister" 
+                            Content="Зарегистрироваться"
+                            Height="35"
+                            Background="Gray"
+                            Foreground="White"
+                            FontWeight="Bold"
+                            Click="btnRegister_Click"/>
+
+                    <!-- Кнопка возврата -->
+                    <Button x:Name="btnBack" 
+                            Content="Назад"
+                            Height="30"
+                            Margin="0,15,0,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Foreground="gray"
+                            Click="btnBack_Click"
+                            />
+                </StackPanel>
+            </ScrollViewer>
         </Border>
     </Grid>
 </Window>

@@ -1,17 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using System;
 
-namespace Diplom_Project
+public partial class App : Application
 {
-    /// <summary>
-    /// Логика взаимодействия для App.xaml
-    /// </summary>
-    public partial class App : Application
+    protected override void OnStartup(StartupEventArgs e)
     {
+        base.OnStartup(e);
+
+        AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
+        {
+            var exception = (Exception)args.ExceptionObject;
+            MessageBox.Show($"Необработанная ошибка: {exception.Message}\n{exception.StackTrace}", "Критическая ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+        };
+
+        DispatcherUnhandledException += (sender, args) =>
+        {
+            MessageBox.Show($"Ошибка в интерфейсе: {args.Exception.Message}\n{args.Exception.StackTrace}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            args.Handled = true;
+        };
     }
 }

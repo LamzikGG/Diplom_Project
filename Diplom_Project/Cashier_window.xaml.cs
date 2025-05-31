@@ -21,7 +21,7 @@ namespace Diplom_Project.Views
             using (var conn = Database.GetConnection())
             {
                 conn.Open();
-                string sql = "SELECT user_id, accommodation_id, check_in, check_out, total_price FROM bookings";
+                string sql = "SELECT booking_id, user_id, accommodation_id, check_in, check_out, total_price FROM bookings";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -29,11 +29,12 @@ namespace Diplom_Project.Views
                     {
                         bookings.Add(new BookingModel
                         {
-                            UserId = reader.GetInt32(0),
-                            AccommodationId = reader.GetInt32(1),
-                            CheckIn = reader.GetDateTime(2).ToString("yyyy-MM-dd"),
-                            CheckOut = reader.GetDateTime(3).ToString("yyyy-MM-dd"),
-                            TotalPrice = reader.GetDecimal(4)
+                            BookingId = reader.GetInt32(0),
+                            UserId = reader.GetInt32(1),
+                            AccommodationId = reader.GetInt32(2),
+                            CheckIn = reader.GetDateTime(3).ToString("yyyy-MM-dd"),
+                            CheckOut = reader.GetDateTime(4).ToString("yyyy-MM-dd"),
+                            TotalPrice = reader.GetDecimal(5)
                         });
                     }
                 }
@@ -47,7 +48,7 @@ namespace Diplom_Project.Views
             using (var conn = Database.GetConnection())
             {
                 conn.Open();
-                string sql = "SELECT user_id, equipment_id, start_time, end_time, total_price FROM rentals";
+                string sql = "SELECT rental_id, user_id, equipment_id, start_time, end_time, total_price FROM rentals";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -55,11 +56,12 @@ namespace Diplom_Project.Views
                     {
                         rentals.Add(new RentalModel
                         {
-                            UserId = reader.GetInt32(0),
-                            EquipmentId = reader.GetInt32(1),
-                            StartTime = reader.GetDateTime(2).ToString("yyyy-MM-dd HH:mm"),
-                            EndTime = reader.IsDBNull(3) ? "В процессе" : reader.GetDateTime(3).ToString("yyyy-MM-dd HH:mm"),
-                            TotalPrice = reader.GetDecimal(4)
+                            RentalId = reader.GetInt32(0),
+                            UserId = reader.GetInt32(1),
+                            EquipmentId = reader.GetInt32(2),
+                            StartTime = reader.GetDateTime(3).ToString("yyyy-MM-dd HH:mm"),
+                            EndTime = reader.IsDBNull(4) ? "В процессе" : reader.GetDateTime(4).ToString("yyyy-MM-dd HH:mm"),
+                            TotalPrice = reader.GetDecimal(5)
                         });
                     }
                 }
@@ -72,16 +74,15 @@ namespace Diplom_Project.Views
             var booking = BookingsDataGrid.SelectedItem as BookingModel;
             if (booking != null)
             {
-                if (MessageBox.Show("Вы уверены?", "Удалить запись", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Вы уверены, что хотите удалить это бронирование?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     using (var conn = Database.GetConnection())
                     {
                         conn.Open();
-                        string sql = "DELETE FROM bookings WHERE user_id = @userId AND accommodation_id = @accId";
+                        string sql = "DELETE FROM bookings WHERE booking_id = @bookingId";
                         using (var cmd = new NpgsqlCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", booking.UserId);
-                            cmd.Parameters.AddWithValue("accId", booking.AccommodationId);
+                            cmd.Parameters.AddWithValue("bookingId", booking.BookingId);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -95,16 +96,15 @@ namespace Diplom_Project.Views
             var rental = RentalsDataGrid.SelectedItem as RentalModel;
             if (rental != null)
             {
-                if (MessageBox.Show("Вы уверены?", "Удалить запись", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Вы уверены, что хотите удалить эту аренду?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
                     using (var conn = Database.GetConnection())
                     {
                         conn.Open();
-                        string sql = "DELETE FROM rentals WHERE user_id = @userId AND equipment_id = @eqId";
+                        string sql = "DELETE FROM rentals WHERE rental_id = @rentalId";
                         using (var cmd = new NpgsqlCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", rental.UserId);
-                            cmd.Parameters.AddWithValue("eqId", rental.EquipmentId);
+                            cmd.Parameters.AddWithValue("rentalId", rental.RentalId);
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -116,6 +116,7 @@ namespace Diplom_Project.Views
 
     public class BookingModel
     {
+        public int BookingId { get; set; }
         public int UserId { get; set; }
         public int AccommodationId { get; set; }
         public string CheckIn { get; set; }
@@ -125,6 +126,7 @@ namespace Diplom_Project.Views
 
     public class RentalModel
     {
+        public int RentalId { get; set; }
         public int UserId { get; set; }
         public int EquipmentId { get; set; }
         public string StartTime { get; set; }

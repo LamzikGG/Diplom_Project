@@ -8,7 +8,6 @@
         Title="Аренда жилья" Height="700" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="#FF0F0F0F">
-
     <Window.Resources>
         <!-- Стиль для карточек жилья -->
         <Style x:Key="HousingCardStyle" TargetType="Border">
@@ -40,7 +39,7 @@
                         <Border Background="{TemplateBinding Background}" 
                                 CornerRadius="5">
                             <ContentPresenter HorizontalAlignment="Center" 
-                                            VerticalAlignment="Center"/>
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -48,6 +47,10 @@
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#FF4D8FD6"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#FF7A7A7A"/>
+                    <Setter Property="Foreground" Value="#CCCCCC"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -88,90 +91,32 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- Шапка с логотипом и заголовком -->
             <Border Grid.Row="0" Background="#FF1A1A1A" Padding="15">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Border Width="50" Height="50" CornerRadius="5" Background="White" 
-                MouseLeftButtonDown="Logo_Click" Cursor="Hand">
+                            MouseLeftButtonDown="Logo_Click" Cursor="Hand">
                         <Image Source="/Image/image (1).jpeg" Stretch="Uniform"/>
                     </Border>
                     <TextBlock Text="Аренда жилья" 
-                  Foreground="White" 
-                  FontSize="24" 
-                  FontWeight="Bold"
-                  Margin="250,0,0,0"
-                  VerticalAlignment="Center"
-                  HorizontalAlignment="Center"/>
+                               Foreground="White" 
+                               FontSize="24" 
+                               FontWeight="Bold"
+                               Margin="20,0,0,0"
+                               VerticalAlignment="Center"/>
                 </StackPanel>
             </Border>
 
-            <!-- Фильтры поиска -->
+            <!-- Список вариантов жилья -->
             <Border Grid.Row="1" Background="#FF151515" Padding="10">
-                <StackPanel>
-                    <!-- Список вариантов жилья -->
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <WrapPanel HorizontalAlignment="Center" Name="HousingItemsPanel">
-                            <!-- Отель -->
-                            <Border Style="{StaticResource HousingCardStyle}">
-                                <StackPanel>
-                                    <Image Source="/Images/hotel.jpg" Height="150" Stretch="UniformToFill"/>
-                                    <TextBlock Text="Горный Отель Премиум" Style="{StaticResource CardTitleStyle}"/>
-                                    <TextBlock Text="Комфортабельные номера с видом на склоны" Style="{StaticResource CardDescriptionStyle}"/>
-                                    <TextBlock Text="8500 руб./ночь" Style="{StaticResource CardPriceStyle}"/>
-                                    <Button Content="Добавить в корзину" 
-                                            Style="{StaticResource RentButtonStyle}"
-                                            Click="AddToCart_Click"
-                                            Tag="8500"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Шале -->
-                            <Border Style="{StaticResource HousingCardStyle}">
-                                <StackPanel>
-                                    <Image Source="/Images/chalet.jpg" Height="150" Stretch="UniformToFill"/>
-                                    <TextBlock Text="Уютное Шале у Подножия" Style="{StaticResource CardTitleStyle}"/>
-                                    <TextBlock Text="Традиционное деревянное шале с камином" Style="{StaticResource CardDescriptionStyle}"/>
-                                    <TextBlock Text="12000 руб./ночь" Style="{StaticResource CardPriceStyle}"/>
-                                    <Button Content="Добавить в корзину" 
-                                            Style="{StaticResource RentButtonStyle}"
-                                            Click="AddToCart_Click"
-                                            Tag="12000"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Апартаменты -->
-                            <Border Style="{StaticResource HousingCardStyle}">
-                                <StackPanel>
-                                    <Image Source="/Images/apartment.jpg" Height="150" Stretch="UniformToFill"/>
-                                    <TextBlock Text="Современные Апартаменты" Style="{StaticResource CardTitleStyle}"/>
-                                    <TextBlock Text="Просторные апартаменты с кухней и гостиной" Style="{StaticResource CardDescriptionStyle}"/>
-                                    <TextBlock Text="6200 руб./ночь" Style="{StaticResource CardPriceStyle}"/>
-                                    <Button Content="Добавить в корзину" 
-                                            Style="{StaticResource RentButtonStyle}"
-                                            Click="AddToCart_Click"
-                                            Tag="6200"/>
-                                </StackPanel>
-                            </Border>
-
-                            <!-- Коттедж -->
-                            <Border Style="{StaticResource HousingCardStyle}">
-                                <StackPanel>
-                                    <Image Source="/Images/cottage.jpg" Height="150" Stretch="UniformToFill"/>
-                                    <TextBlock Text="Просторный Коттедж" Style="{StaticResource CardTitleStyle}"/>
-                                    <TextBlock Text="Большой коттедж для компании до 8 человек" Style="{StaticResource CardDescriptionStyle}"/>
-                                    <TextBlock Text="18500 руб./ночь" Style="{StaticResource CardPriceStyle}"/>
-                                    <Button Content="Добавить в корзину" 
-                                            Style="{StaticResource RentButtonStyle}"
-                                            Click="AddToCart_Click"
-                                            Tag="18500"/>
-                                </StackPanel>
-                            </Border>
-                        </WrapPanel>
-                    </ScrollViewer>
-                </StackPanel>
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled">
+                    <WrapPanel x:Name="HousingItemsPanel"
+                               HorizontalAlignment="Center"
+                               Orientation="Horizontal"/>
+                </ScrollViewer>
             </Border>
         </Grid>
 
@@ -187,7 +132,16 @@
                 <ListView x:Name="CartListView" 
                           Height="300"
                           Background="Transparent"
-                          BorderThickness="0">
+                          BorderThickness="0"
+                          ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0,0,0,5"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
                     <ListView.ItemTemplate>
                         <DataTemplate>
                             <Grid Margin="0,5">
@@ -195,7 +149,6 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="{Binding Name}" 
                                                Foreground="White"
@@ -203,13 +156,13 @@
                                     <TextBlock Text="{Binding Price, StringFormat='{}{0} руб./ночь'}" 
                                                Foreground="#AAAAAA"/>
                                 </StackPanel>
-
                                 <Button Grid.Column="1" 
                                         Content="✕" 
                                         Foreground="Red"
                                         Background="Transparent"
                                         BorderThickness="0"
                                         Padding="5,0"
+                                        Cursor="Hand"
                                         Click="RemoveFromCart_Click"
                                         Tag="{Binding Id}"/>
                             </Grid>
@@ -236,6 +189,7 @@
                         Content="Оформить заявку"
                         Style="{StaticResource RentButtonStyle}"
                         Margin="0,20,0,0"
+                        Cursor="Hand"
                         Click="CheckoutButton_Click"/>
 
                 <TextBlock x:Name="StatusText"

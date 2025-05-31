@@ -261,10 +261,10 @@
     <Resource Include="Image\image3.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\image %281%29.jpeg" />
+    <Content Include="Image\image %281%29.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\image %282%29.jpeg" />
+    <Content Include="Image\image %282%29.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Image\unnamed.jpg" />
