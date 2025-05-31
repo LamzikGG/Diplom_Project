@@ -3,7 +3,12 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Админ-панель" Height="600" Width="1000">
     <Grid Margin="10">
-        <TabControl>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0">
             <!-- Вкладка управления пользователями -->
             <TabItem Header="Пользователи">
                 <Grid>
@@ -65,5 +70,8 @@
                 </Grid>
             </TabItem>
         </TabControl>
+
+        <!-- Кнопка выхода в левом нижнем углу -->
+        <Button Content="Выход" Width="100" Height="30" HorizontalAlignment="Left" Margin="10,534,0,0" Click="ExitButton_Click"/>
     </Grid>
 </Window>

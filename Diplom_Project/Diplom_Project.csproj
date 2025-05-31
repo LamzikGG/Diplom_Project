@@ -167,9 +167,6 @@
       <DependentUpon>admin_panel.xaml</DependentUpon>
     </Compile>
     <Compile Include="models\RentalModel.cs" />
-    <Compile Include="reviews.xaml.cs">
-      <DependentUpon>reviews.xaml</DependentUpon>
-    </Compile>
     <Compile Include="models\UserModel.cs" />
     <Compile Include="routes.xaml.cs">
       <DependentUpon>routes.xaml</DependentUpon>
@@ -211,10 +208,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="admin_panel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="reviews.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

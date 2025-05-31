@@ -327,5 +327,11 @@ namespace Diplom_Project.Views
         {
             LoadSellers();
         }
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            authorisation mainwindow = new authorisation();
+            mainwindow.Show();
+            this.Close();
+        }
     }
 }

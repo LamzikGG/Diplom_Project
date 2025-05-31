@@ -5,14 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diplom_Project"
         mc:Ignorable="d"
-        Title="Трасы" Height="600" Width="800"
+        Title="Трассы" Height="600" Width="800"
         WindowStartupLocation="CenterScreen">
     <Grid Background="#FF0F0F0F">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Шапка -->
             <RowDefinition Height="*"/>
-            <!-- Основное содержимое -->
         </Grid.RowDefinitions>
 
         <!-- Шапка с логотипом и заголовком -->
@@ -31,8 +29,98 @@
                           HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>
-        <!-- Изображение на весь доступный размер -->
-            <Image Source="/Image/unnamed.jpg" 
-                   Stretch="UniformToFill" Margin="90,64,90,80" Grid.Row="1"/>
-        </Grid>
+
+        <!-- Основное содержимое - блоки с трассами -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
+                <!-- Трасса 1 -->
+                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Image/slope1.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
+
+                        <StackPanel Grid.Column="1" Margin="15,0">
+                            <TextBlock Text="Чёрная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="Сложность: Эксперт" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
+                            <TextBlock Text="Длина: 3500м" Foreground="#FFAAAAAA"/>
+                            <TextBlock Text="Перепад высот: 850м" Foreground="#FFAAAAAA"/>
+                        </StackPanel>
+
+                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Трасса 2 -->
+                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Image/slope2.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
+
+                        <StackPanel Grid.Column="1" Margin="15,0">
+                            <TextBlock Text="Красная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="Сложность: Продвинутый" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
+                            <TextBlock Text="Длина: 2800м" Foreground="#FFAAAAAA"/>
+                            <TextBlock Text="Перепад высот: 650м" Foreground="#FFAAAAAA"/>
+                        </StackPanel>
+
+                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Трасса 3 -->
+                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Image/slope3.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
+
+                        <StackPanel Grid.Column="1" Margin="15,0">
+                            <TextBlock Text="Синяя трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="Сложность: Средний" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
+                            <TextBlock Text="Длина: 2000м" Foreground="#FFAAAAAA"/>
+                            <TextBlock Text="Перепад высот: 450м" Foreground="#FFAAAAAA"/>
+                        </StackPanel>
+
+                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+
+                <!-- Трасса 4 -->
+                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Source="/Image/slope4.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
+
+                        <StackPanel Grid.Column="1" Margin="15,0">
+                            <TextBlock Text="Зелёная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
+                            <TextBlock Text="Сложность: Начинающий" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
+                            <TextBlock Text="Длина: 1500м" Foreground="#FFAAAAAA"/>
+                            <TextBlock Text="Перепад высот: 250м" Foreground="#FFAAAAAA"/>
+                        </StackPanel>
+
+                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
 </Window>
