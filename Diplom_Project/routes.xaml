@@ -51,7 +51,10 @@
                             <TextBlock Text="Перепад высот: 850м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
-                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="Подробная информация" Width="120" Height="30" 
+                                    Click="ShowDetails_Click" Tag="Чёрная трасса"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -73,7 +76,10 @@
                             <TextBlock Text="Перепад высот: 650м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
-                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="Подробная информация" Width="120" Height="30" 
+                                    Click="ShowDetails_Click" Tag="Красная трасса"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -95,7 +101,10 @@
                             <TextBlock Text="Перепад высот: 450м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
-                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="Подробная информация" Width="120" Height="30" 
+                                    Click="ShowDetails_Click" Tag="Синяя трасса"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
 
@@ -117,7 +126,10 @@
                             <TextBlock Text="Перепад высот: 250м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
-                        <Button Content="Выбрать" Width="100" Height="30" Grid.Column="2" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                            <Button Content="Подробная информация" Width="120" Height="30" 
+                                    Click="ShowDetails_Click" Tag="Зелёная трасса"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </StackPanel>
