@@ -18,28 +18,24 @@ namespace Diplom_Project
         {
             var authWindow = new authorisation();
             authWindow.Show();
-            this.Close();
         }
 
         private void Image1_Click(object sender, RoutedEventArgs e)
         {
             var routesWindow = new routes(_user);
             routesWindow.Show();
-            this.Close();
         }
 
         private void Image2_Click(object sender, RoutedEventArgs e)
         {
             var arendaZhilYa = new arenda_zhilya(_user);
             arendaZhilYa.Show();
-            this.Close();
         }
 
         private void Image3_Click(object sender, RoutedEventArgs e)
         {
             var arendaEkipirovka = new arenda_ekipa(_user);
             arendaEkipirovka.Show();
-            this.Close();
         }
 
         private void ReviewsButton_Click(object sender, RoutedEventArgs e)

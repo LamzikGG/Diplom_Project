@@ -9,16 +9,6 @@
         </Grid.RowDefinitions>
 
         <TabControl Grid.Row="0">
-            <!-- Вкладка управления пользователями -->
-            <TabItem Header="Пользователи">
-                <Grid>
-                    <DataGrid x:Name="UsersDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,0,0,40"/>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                        <Button Content="Обновить" Width="100" Height="30" Click="RefreshUsers_Click" Margin="0,0,10,0"/>
-                        <Button Content="Сохранить изменения" Width="150" Height="30" Click="SaveUsers_Click"/>
-                    </StackPanel>
-                </Grid>
-            </TabItem>
 
             <!-- Вкладка изменения цен на оборудование -->
             <TabItem Header="Цены на оборудование">
@@ -38,6 +28,25 @@
                 </Grid>
             </TabItem>
 
+            <!-- Вкладка отзывов -->
+            <TabItem Header="Отзывы">
+                <Grid>
+                    <DataGrid x:Name="ReviewsDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Margin="0,0,0,40">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="ID" Binding="{Binding ReviewId}" Width="Auto"/>
+                            <DataGridTextColumn Header="Пользователь" Binding="{Binding Username}" Width="*"/>
+                            <DataGridTextColumn Header="Оценка" Binding="{Binding Rating}" Width="Auto"/>
+                            <DataGridTextColumn Header="Отзыв" Binding="{Binding Content}" Width="*"/>
+                            <DataGridTextColumn Header="Дата" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy}" Width="Auto"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button Content="Обновить" Width="100" Height="30" Click="RefreshReviews_Click" Margin="0,0,10,0"/>
+                        <Button Content="Удалить" Width="100" Height="30" Click="DeleteReview_Click" Margin="0,0,10,0"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
             <!-- Вкладка изменения цен на жильё -->
             <TabItem Header="Цены на жильё">
                 <Grid>
@@ -53,20 +62,6 @@
                         <Button Content="Удалить" Width="100" Height="30" Click="DeleteAccommodation_Click" Margin="0,0,10,10"/>
                         <Button Content="Сохранить" Width="100" Height="30" Click="SaveAccommodationPrices_Click" Margin="0,0,10,10"/>
                     </StackPanel>
-                </Grid>
-            </TabItem>
-
-            <!-- Вкладка просмотра продавцов -->
-            <TabItem Header="Продавцы">
-                <Grid>
-                    <DataGrid x:Name="SellersDataGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True" Margin="0,0,0,40">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="*"/>
-                            <DataGridTextColumn Header="Имя пользователя" Binding="{Binding Username}" Width="*"/>
-                            <DataGridTextColumn Header="Дата регистрации" Binding="{Binding CreatedAt, StringFormat=dd.MM.yyyy}" Width="*"/>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    <Button Content="Обновить список" Width="120" Height="30" Click="RefreshSellers_Click" HorizontalAlignment="Right" Margin="0,0,10,10"/>
                 </Grid>
             </TabItem>
         </TabControl>

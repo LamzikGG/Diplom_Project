@@ -20,7 +20,6 @@ namespace Diplom_Project
         {
             var registration = new Registration();
             registration.Show();
-            this.Close();
         }
 
         private void LoginButton(object sender, RoutedEventArgs e)
@@ -58,14 +57,12 @@ namespace Diplom_Project
         {
             var adminPanel = new AdminPanel(); // Передаем UserModel в конструктор
             adminPanel.Show();
-            this.Close();
         }
 
         private void OpenCashierWindow(UserModel user)
         {
             var cashierWindow = new CashierWindow(user); // Передаем UserModel в конструктор
             cashierWindow.Show();
-            this.Close();
         }
 
         private void CheckRegularUser(string login, string password)

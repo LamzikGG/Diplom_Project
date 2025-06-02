@@ -5,8 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Diplom_Project"
         mc:Ignorable="d"
-        Title="Главная страница" Height="600" Width="800"
-        WindowStartupLocation="CenterScreen">
+        Title="Главная страница" 
+        WindowState="Maximized"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize">
     <Grid Background="#FF0F0F0F">
         <Grid.Resources>
             <!-- Стиль для кнопок с изображениями -->
@@ -43,47 +45,41 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Шапка с кнопкой "Отзывы", заголовком по центру и логотипом справа -->
+        <!-- Шапка с заголовком по центру и кнопкой отзывов справа -->
         <Border Grid.Row="0" Background="#FF1A1A1A" Padding="15">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <!-- Кнопка слева -->
-                    <ColumnDefinition Width="*"/>
-                    <!-- Центр -->
-                    <ColumnDefinition Width="Auto"/>
-                    <!-- Логотип-->
-                </Grid.ColumnDefinitions>
+            <DockPanel LastChildFill="False">
+                <!-- Логотип слева -->
+                <Border DockPanel.Dock="Left"
+                        Width="50" Height="50" CornerRadius="5" Background="White"
+                        MouseLeftButtonDown="Logo_Click" Cursor="Hand">
+                    <Image Source="/Image/image.jpeg" Stretch="Uniform"/>
+                </Border>
 
-                <!-- Кнопка "Отзывы"-->
+                <!-- Заголовок по центру -->
+                <TextBlock Text="Аренда жилья" 
+                           Foreground="White" 
+                           FontSize="24" 
+                           FontWeight="Bold"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"
+                           DockPanel.Dock="Left"
+                           Margin="20,0,0,0"/>
+
+                <!-- Кнопка "Отзывы" справа -->
                 <Button x:Name="ReviewsButton"
                         Content="Отзывы"
                         Foreground="White"
                         Background="Transparent"
                         BorderBrush="Transparent"
                         FontSize="16"
-                        Padding="10"
-                        VerticalAlignment="Top"
-                        HorizontalAlignment="Left"
+                        Padding="10,5"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Right"
                         Click="ReviewsButton_Click"
-                        Cursor="Hand" Grid.Column="1" Margin="670,0,0,0"/>
-
-                <!-- Заголовок по центру -->
-                <TextBlock Grid.Column="1"
-                           Text="Аренда жилья" 
-                           Foreground="White" 
-                           FontSize="24" 
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           HorizontalAlignment="Center"/>
-
-                <!-- Логотип справа -->
-                <Border
-                        Width="50" Height="50" CornerRadius="5" Background="White"
-                        MouseLeftButtonDown="Logo_Click" Cursor="Hand" Grid.ColumnSpan="2" Margin="-15,-3,685,3">
-                    <Image Source="/Image/image (1).jpeg" Stretch="Uniform" Margin="-716,-1,716,1"/>
-                </Border>
-            </Grid>
+                        Cursor="Hand"
+                        DockPanel.Dock="Right"
+                        Margin="0,0,20,0"/>
+            </DockPanel>
         </Border>
 
         <!-- Основное содержимое -->
@@ -92,46 +88,48 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+
             <UniformGrid Grid.Row="0" Rows="1" Columns="3" 
                         HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                <!-- Блок 1 -->
+                <Border Width="300" Height="400" Margin="20" CornerRadius="8"
                         Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image1_Click">
                             <Image Source="/Image/image2.jpg" Stretch="UniformToFill"
-                                   Width="220" Height="220"/>
+                                   Width="280" Height="280"/>
                         </Button>
-                        <TextBlock Text="Трасы" HorizontalAlignment="Center" 
-                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                        <TextBlock Text="Трассы" HorizontalAlignment="Center" 
+                                   Margin="0,20,0,0" FontSize="20" Foreground="White"/>
                     </StackPanel>
                 </Border>
 
                 <!-- Блок 2 -->
-                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                <Border Width="300" Height="400" Margin="20" CornerRadius="8"
                         Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image2_Click">
                             <Image Source="/Image/image3.jpg" Stretch="UniformToFill"
-                                   Width="220" Height="220"/>
+                                   Width="280" Height="280"/>
                         </Button>
                         <TextBlock Text="Аренда жилья" HorizontalAlignment="Center" 
-                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                                   Margin="0,20,0,0" FontSize="20" Foreground="White"/>
                     </StackPanel>
                 </Border>
 
                 <!-- Блок 3 -->
-                <Border Width="208" Height="308" Margin="15" CornerRadius="8"
+                <Border Width="300" Height="400" Margin="20" CornerRadius="8"
                         Background="#FF252525" BorderBrush="#FF404040" BorderThickness="1">
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image3_Click">
-                            <Image Source="/Image/image (2).jpeg" Stretch="UniformToFill"
-                                   Width="220" Height="220"/>
+                            <Image Source="/Image/image (2).jpg" Stretch="UniformToFill"
+                                   Width="280" Height="280"/>
                         </Button>
                         <TextBlock Text="Аренда экипировки" HorizontalAlignment="Center" 
-                                   Margin="0,15,0,0" FontSize="18" Foreground="White"/>
+                                   Margin="0,20,0,0" FontSize="20" Foreground="White"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>

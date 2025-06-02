@@ -90,7 +90,6 @@ namespace Diplom_Project
         {
             var authWindow = new authorisation();
             authWindow.Show();
-            this.Close();
         }
     }
 }
