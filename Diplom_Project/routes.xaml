@@ -46,9 +46,6 @@
 
                         <StackPanel Grid.Column="1" Margin="15,0">
                             <TextBlock Text="Чёрная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                            <TextBlock Text="Сложность: Эксперт" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
-                            <TextBlock Text="Длина: 3500м" Foreground="#FFAAAAAA"/>
-                            <TextBlock Text="Перепад высот: 850м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
@@ -71,9 +68,6 @@
 
                         <StackPanel Grid.Column="1" Margin="15,0">
                             <TextBlock Text="Красная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                            <TextBlock Text="Сложность: Продвинутый" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
-                            <TextBlock Text="Длина: 2800м" Foreground="#FFAAAAAA"/>
-                            <TextBlock Text="Перепад высот: 650м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
@@ -96,9 +90,6 @@
 
                         <StackPanel Grid.Column="1" Margin="15,0">
                             <TextBlock Text="Синяя трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                            <TextBlock Text="Сложность: Средний" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
-                            <TextBlock Text="Длина: 2000м" Foreground="#FFAAAAAA"/>
-                            <TextBlock Text="Перепад высот: 450м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">
@@ -121,9 +112,6 @@
 
                         <StackPanel Grid.Column="1" Margin="15,0">
                             <TextBlock Text="Зелёная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                            <TextBlock Text="Сложность: Начинающий" Foreground="#FFAAAAAA" Margin="0,5,0,0"/>
-                            <TextBlock Text="Длина: 1500м" Foreground="#FFAAAAAA"/>
-                            <TextBlock Text="Перепад высот: 250м" Foreground="#FFAAAAAA"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2" VerticalAlignment="Center">

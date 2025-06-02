@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using Diplom_Project.Models;
+using Diplom_Project.Views;
 
 namespace Diplom_Project
 {
@@ -39,6 +40,12 @@ namespace Diplom_Project
             var arendaEkipirovka = new arenda_ekipa(_user);
             arendaEkipirovka.Show();
             this.Close();
+        }
+
+        private void ReviewsButton_Click(object sender, RoutedEventArgs e)
+        {
+            var reviewsWindow = new ReviewsWindow(_user);
+            reviewsWindow.Show();
         }
     }
 }

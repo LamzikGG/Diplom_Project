@@ -90,6 +90,7 @@ namespace Diplom_Project
                             var border = new Border { Style = Resources["EquipmentCardStyle"] as Style };
                             var stackPanel = new StackPanel();
 
+                            // Изображение
                             var image = new Image
                             {
                                 Source = new BitmapImage(new Uri("/Image/ski.png", UriKind.Relative)),
@@ -97,27 +98,31 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(image);
 
-                            var brandText = new TextBlock
-                            {
-                                Text = brand,
-                                Style = Resources["EquipmentTitleStyle"] as Style
-                            };
-                            stackPanel.Children.Add(brandText);
-
+                            // Тип экипировки (теперь идет первым)
                             var typeText = new TextBlock
                             {
                                 Text = type,
-                                Style = Resources["EquipmentTextStyle"] as Style
+                                Style = Resources["EquipmentTypeStyle"] as Style
                             };
                             stackPanel.Children.Add(typeText);
 
+                            // Бренд (теперь идет вторым)
+                            var brandText = new TextBlock
+                            {
+                                Text = brand,
+                                Style = Resources["EquipmentBrandStyle"] as Style
+                            };
+                            stackPanel.Children.Add(brandText);
+
+                            // Цена
                             var priceText = new TextBlock
                             {
-                                Text = $"{price} руб./день",
+                                Text = $"{price:0.00} руб./день",
                                 Style = Resources["EquipmentPriceStyle"] as Style
                             };
                             stackPanel.Children.Add(priceText);
 
+                            // Кнопка аренды
                             var rentButton = new Button
                             {
                                 Content = "Арендовать",
@@ -144,7 +149,12 @@ namespace Diplom_Project
         {
             var button = sender as Button;
             var parent = button.Parent as StackPanel;
-            string name = ((TextBlock)parent.Children[1]).Text + " " + ((TextBlock)parent.Children[2]).Text;
+
+            // Получаем тип и бренд в новом порядке
+            string type = ((TextBlock)parent.Children[1]).Text;
+            string brand = ((TextBlock)parent.Children[2]).Text;
+            string name = $"{type} {brand}";
+
             decimal price = (decimal)button.Tag;
             int equipmentId = (int)button.CommandParameter;
 

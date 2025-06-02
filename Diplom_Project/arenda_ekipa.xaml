@@ -31,20 +31,29 @@
             <Setter Property="VerticalAlignment" Value="Top"/>
         </Style>
 
-        <Style x:Key="EquipmentTitleStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="16"/>
+        <Style x:Key="EquipmentTypeStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#FF3A6EA5"/>
+            <Setter Property="FontSize" Value="18"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="10,15,10,5"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
 
-        <Style x:Key="EquipmentPriceStyle" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#FF3A6EA5"/>
-            <Setter Property="FontSize" Value="18"/>
+        <Style x:Key="EquipmentBrandStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="16"/>
             <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Margin" Value="10,0,10,15"/>
+            <Setter Property="Margin" Value="10,0,10,5"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+
+        <Style x:Key="EquipmentPriceStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#AAAAAA"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="Margin" Value="10,0,10,10"/>
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
 
