@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using Diplom_Project.Models;
 
 namespace Diplom_Project
 {
     public partial class routes : Window
     {
-        public routes()
+        private readonly UserModel _user;
+
+        public routes(UserModel user)
         {
             InitializeComponent();
+            _user = user;
         }
-        private void Logo_Click(object sender, MouseButtonEventArgs e)
+
+        private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MainWindow go_windowmain = new MainWindow();
-            go_windowmain.Show();
+            var mainWindow = new MainWindow(_user);
+            mainWindow.Show();
             this.Close();
         }
     }

@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Diplom_Project.Models;
 using Diplom_Project.Services;
 using Npgsql;
 
@@ -16,6 +17,7 @@ namespace Diplom_Project
         private ObservableCollection<RentalItem> _cartItems = new ObservableCollection<RentalItem>();
         private decimal _totalPrice;
         private string _statusMessage;
+        private readonly UserModel _user;
 
         public ObservableCollection<RentalItem> CartItems
         {
@@ -50,10 +52,11 @@ namespace Diplom_Project
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public arenda_ekipa()
+        public arenda_ekipa(UserModel user)
         {
             InitializeComponent();
             DataContext = this;
+            _user = user;
             LoadEquipmentFromDatabase();
         }
 
@@ -84,13 +87,9 @@ namespace Diplom_Project
                             decimal price = reader.GetDecimal(3);
 
                             // Создаем карточку
-                            var border = new Border
-                            {
-                                Style = Resources["EquipmentCardStyle"] as Style
-                            };
+                            var border = new Border { Style = Resources["EquipmentCardStyle"] as Style };
                             var stackPanel = new StackPanel();
 
-                            // Картинка
                             var image = new Image
                             {
                                 Source = new BitmapImage(new Uri("/Image/ski.png", UriKind.Relative)),
@@ -98,7 +97,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(image);
 
-                            // Бренд
                             var brandText = new TextBlock
                             {
                                 Text = brand,
@@ -106,7 +104,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(brandText);
 
-                            // Тип оборудования
                             var typeText = new TextBlock
                             {
                                 Text = type,
@@ -114,7 +111,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(typeText);
 
-                            // Цена
                             var priceText = new TextBlock
                             {
                                 Text = $"{price} руб./день",
@@ -122,7 +118,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(priceText);
 
-                            // Кнопка аренды
                             var rentButton = new Button
                             {
                                 Content = "Арендовать",
@@ -149,7 +144,6 @@ namespace Diplom_Project
         {
             var button = sender as Button;
             var parent = button.Parent as StackPanel;
-
             string name = ((TextBlock)parent.Children[1]).Text + " " + ((TextBlock)parent.Children[2]).Text;
             decimal price = (decimal)button.Tag;
             int equipmentId = (int)button.CommandParameter;
@@ -170,7 +164,6 @@ namespace Diplom_Project
         {
             var button = sender as Button;
             int id = (int)button.Tag;
-
             var itemToRemove = CartItems.FirstOrDefault(x => x.Id == id);
             if (itemToRemove != null)
             {
@@ -178,9 +171,10 @@ namespace Diplom_Project
                 StatusMessage = $"Удалено: {itemToRemove.Name}";
             }
         }
+
         private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
+            var mainWindow = new MainWindow(_user);
             mainWindow.Show();
             this.Close();
         }
@@ -210,27 +204,21 @@ namespace Diplom_Project
                             VALUES (@userId, @equipmentId, CURRENT_TIMESTAMP, NULL, @price)";
                         using (var cmd = new NpgsqlCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", GetCurrentUserId());
+                            cmd.Parameters.AddWithValue("userId", _user.Id);
                             cmd.Parameters.AddWithValue("equipmentId", item.EquipmentId);
                             cmd.Parameters.AddWithValue("price", item.Price);
                             cmd.ExecuteNonQuery();
                         }
                     }
-
-                    CartItems.Clear();
-                    StatusMessage = "Аренда успешно оформлена!";
                 }
+
+                CartItems.Clear();
+                StatusMessage = "Аренда успешно оформлена!";
             }
             catch (Exception ex)
             {
                 StatusMessage = $"Ошибка оформления аренды: {ex.Message}";
             }
-        }
-
-        private int GetCurrentUserId()
-        {
-            // Здесь должна быть логика получения ID текущего пользователя
-            return 1; // Временное значение
         }
     }
 

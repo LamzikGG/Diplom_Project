@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Data;
 using System.Windows;
+using Diplom_Project.Models;
 using Diplom_Project.Services;
 using Npgsql;
 
@@ -8,9 +9,12 @@ namespace Diplom_Project.Views
 {
     public partial class CashierWindow : Window
     {
-        public CashierWindow()
+        private readonly UserModel _user;
+
+        public CashierWindow(UserModel user)
         {
             InitializeComponent();
+            _user = user;
             LoadBookings();
             LoadRentals();
         }
@@ -21,7 +25,10 @@ namespace Diplom_Project.Views
             using (var conn = Database.GetConnection())
             {
                 conn.Open();
-                string sql = "SELECT booking_id, user_id, accommodation_id, check_in, check_out, total_price FROM bookings";
+                string sql = @"
+            SELECT b.booking_id, u.first_name, u.last_name, u.phone, b.accommodation_id, b.check_in, b.check_out, b.total_price 
+            FROM bookings b
+            JOIN users u ON b.user_id = u.id";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -30,11 +37,12 @@ namespace Diplom_Project.Views
                         bookings.Add(new BookingModel
                         {
                             BookingId = reader.GetInt32(0),
-                            UserId = reader.GetInt32(1),
-                            AccommodationId = reader.GetInt32(2),
-                            CheckIn = reader.GetDateTime(3).ToString("yyyy-MM-dd"),
-                            CheckOut = reader.GetDateTime(4).ToString("yyyy-MM-dd"),
-                            TotalPrice = reader.GetDecimal(5)
+                            UserName = $"{reader.GetString(1)} {reader.GetString(2)}",
+                            UserPhone = reader.GetString(3),
+                            AccommodationId = reader.GetInt32(4),
+                            CheckIn = reader.GetDateTime(5).ToString("yyyy-MM-dd"),
+                            CheckOut = reader.GetDateTime(6).ToString("yyyy-MM-dd"),
+                            TotalPrice = reader.GetDecimal(7)
                         });
                     }
                 }
@@ -48,7 +56,11 @@ namespace Diplom_Project.Views
             using (var conn = Database.GetConnection())
             {
                 conn.Open();
-                string sql = "SELECT rental_id, user_id, equipment_id, start_time, end_time, total_price FROM rentals";
+                string sql = @"
+            SELECT r.rental_id, u.first_name, u.last_name, u.phone, e.type, r.start_time, r.end_time, r.total_price 
+            FROM rentals r
+            JOIN users u ON r.user_id = u.id
+            JOIN equipment e ON r.equipment_id = e.equipment_id";
                 using (var cmd = new NpgsqlCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
@@ -57,11 +69,12 @@ namespace Diplom_Project.Views
                         rentals.Add(new RentalModel
                         {
                             RentalId = reader.GetInt32(0),
-                            UserId = reader.GetInt32(1),
-                            EquipmentId = reader.GetInt32(2),
-                            StartTime = reader.GetDateTime(3).ToString("yyyy-MM-dd HH:mm"),
-                            EndTime = reader.IsDBNull(4) ? "В процессе" : reader.GetDateTime(4).ToString("yyyy-MM-dd HH:mm"),
-                            TotalPrice = reader.GetDecimal(5)
+                            UserName = $"{reader.GetString(1)} {reader.GetString(2)}",
+                            UserPhone = reader.GetString(3),
+                            EquipmentName = reader.GetString(4),
+                            StartTime = reader.GetDateTime(5).ToString("yyyy-MM-dd HH:mm"),
+                            EndTime = reader.IsDBNull(6) ? "В процессе" : reader.GetDateTime(6).ToString("yyyy-MM-dd HH:mm"),
+                            TotalPrice = reader.GetDecimal(7)
                         });
                     }
                 }
@@ -69,72 +82,94 @@ namespace Diplom_Project.Views
             RentalsDataGrid.ItemsSource = rentals;
         }
 
+        // Удаление бронирования
         private void DeleteBooking_Click(object sender, RoutedEventArgs e)
         {
-            var booking = BookingsDataGrid.SelectedItem as BookingModel;
-            if (booking != null)
+            if (BookingsDataGrid.SelectedItem is CashierWindow.BookingModel booking)
             {
-                if (MessageBox.Show("Вы уверены, что хотите удалить это бронирование?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить эту запись?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                 {
-                    using (var conn = Database.GetConnection())
+                    try
                     {
-                        conn.Open();
-                        string sql = "DELETE FROM bookings WHERE booking_id = @bookingId";
-                        using (var cmd = new NpgsqlCommand(sql, conn))
+                        using (var conn = Database.GetConnection())
                         {
-                            cmd.Parameters.AddWithValue("bookingId", booking.BookingId);
-                            cmd.ExecuteNonQuery();
+                            conn.Open();
+                            string sql = "DELETE FROM bookings WHERE booking_id = @id";
+                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            {
+                                cmd.Parameters.AddWithValue("id", booking.BookingId);
+                                cmd.ExecuteNonQuery();
+                            }
                         }
+                        LoadBookings(); // Обновляем таблицу
                     }
-                    LoadBookings();
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show("Ошибка при удалении: " + ex.Message);
+                    }
                 }
             }
         }
 
+        // Удаление аренды
         private void DeleteRental_Click(object sender, RoutedEventArgs e)
         {
-            var rental = RentalsDataGrid.SelectedItem as RentalModel;
-            if (rental != null)
+            if (RentalsDataGrid.SelectedItem is CashierWindow.RentalModel rental)
             {
-                if (MessageBox.Show("Вы уверены, что хотите удалить эту аренду?", "Удаление", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить эту запись?", "Подтверждение удаления", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
                 {
-                    using (var conn = Database.GetConnection())
+                    try
                     {
-                        conn.Open();
-                        string sql = "DELETE FROM rentals WHERE rental_id = @rentalId";
-                        using (var cmd = new NpgsqlCommand(sql, conn))
+                        using (var conn = Database.GetConnection())
                         {
-                            cmd.Parameters.AddWithValue("rentalId", rental.RentalId);
-                            cmd.ExecuteNonQuery();
+                            conn.Open();
+                            string sql = "DELETE FROM rentals WHERE rental_id = @id";
+                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            {
+                                cmd.Parameters.AddWithValue("id", rental.RentalId);
+                                cmd.ExecuteNonQuery();
+                            }
                         }
+                        LoadRentals(); // Обновляем таблицу
                     }
-                    LoadRentals();
+                    catch (System.Exception ex)
+                    {
+                        MessageBox.Show("Ошибка при удалении: " + ex.Message);
+                    }
                 }
             }
         }
-    }
 
-    public class BookingModel
-    {
-        public int BookingId { get; set; }
-        public int UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserPhone { get; set; }
-        public int AccommodationId { get; set; }
-        public string CheckIn { get; set; }
-        public string CheckOut { get; set; }
-        public decimal TotalPrice { get; set; }
-    }
+        private void Logout_Click(object sender, RoutedEventArgs e)
+        {
+            var authWindow = new authorisation();
+            authWindow.Show();
+            this.Close();
+        }
 
-    public class RentalModel
-    {
-        public int RentalId { get; set; }
-        public int UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserPhone { get; set; }
-        public int EquipmentId { get; set; }
-        public string StartTime { get; set; }
-        public string EndTime { get; set; }
-        public decimal TotalPrice { get; set; }
+        // Модели
+        public class BookingModel
+        {
+            public int BookingId { get; set; }
+            public string UserName { get; set; }
+            public string UserPhone { get; set; }
+            public int AccommodationId { get; set; }
+            public string CheckIn { get; set; }
+            public string CheckOut { get; set; }
+            public decimal TotalPrice { get; set; }
+        }
+
+        public class RentalModel
+        {
+            public int RentalId { get; set; }
+            public string UserName { get; set; }
+            public string UserPhone { get; set; }
+            public string EquipmentName { get; set; }
+            public string StartTime { get; set; }
+            public string EndTime { get; set; }
+            public decimal TotalPrice { get; set; }
+        }
     }
 }

@@ -1,40 +1,44 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
+using Diplom_Project.Models;
 
 namespace Diplom_Project
 {
     public partial class MainWindow : Window
     {
-        private void Logo_Click(object sender, MouseButtonEventArgs e)
-        {
-            authorisation go_authorisation = new authorisation();
-            go_authorisation.Show();
-            this.Close();
-        }
-        public MainWindow()
+        private readonly UserModel _user;
+
+        public MainWindow(UserModel user)
         {
             InitializeComponent();
+            _user = user;
         }
-        private void Image1_Click(object sender, RoutedEventArgs e)
+
+        private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            routes go_see_routes = new routes();
-            go_see_routes.Show();
+            var authWindow = new authorisation();
+            authWindow.Show();
             this.Close();
         }
+
+        private void Image1_Click(object sender, RoutedEventArgs e)
+        {
+            var routesWindow = new routes(_user);
+            routesWindow.Show();
+            this.Close();
+        }
+
         private void Image2_Click(object sender, RoutedEventArgs e)
         {
-            var arenda_zshilia = new arenda_zhilya();
-            arenda_zshilia.Show();
+            var arendaZhilYa = new arenda_zhilya(_user);
+            arendaZhilYa.Show();
             this.Close();
         }
 
         private void Image3_Click(object sender, RoutedEventArgs e)
         {
-            var arenda_ekipirovki = new arenda_ekipa();
-            arenda_ekipirovki.Show();
+            var arendaEkipirovka = new arenda_ekipa(_user);
+            arendaEkipirovka.Show();
             this.Close();
-
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Windows;
 using Diplom_Project.Services;
 using Diplom_Project.Views;
 using Npgsql;
-using Diplom_Project.Models; // Добавляем using для UserModel
+using Diplom_Project.Models;
 
 namespace Diplom_Project
 {
@@ -46,7 +46,7 @@ namespace Diplom_Project
             if (login == "kasir" && password == "kasir")
             {
                 _currentUser = new UserModel { Id = -2, Username = "kasir", Role = "cashier" };
-                OpenCashierWindow();
+                OpenCashierWindow(_currentUser);
                 return;
             }
 
@@ -61,9 +61,9 @@ namespace Diplom_Project
             this.Close();
         }
 
-        private void OpenCashierWindow()
+        private void OpenCashierWindow(UserModel user)
         {
-            var cashierWindow = new CashierWindow(); // Передаем UserModel в конструктор
+            var cashierWindow = new CashierWindow(user); // Передаем UserModel в конструктор
             cashierWindow.Show();
             this.Close();
         }
@@ -75,25 +75,29 @@ namespace Diplom_Project
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    string sql = "SELECT id, role FROM users WHERE username = @login AND password_hash = crypt(@password, password_hash)";
-
+                    string sql = @"
+                SELECT u.id, u.role, u.first_name, u.last_name, u.phone 
+                FROM users u
+                WHERE u.username = @login AND u.password_hash = crypt(@password, u.password_hash)";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@login", login);
                         cmd.Parameters.AddWithValue("@password", password);
-
                         using (var reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
-                                _currentUser = new UserModel
+                                var user = new UserModel
                                 {
                                     Id = reader.GetInt32(0),
                                     Username = login,
-                                    Role = reader.GetString(1)
+                                    Role = reader.GetString(1),
+                                    FirstName = reader.GetString(2),
+                                    LastName = reader.GetString(3),
+                                    Phone = reader.GetString(4)
                                 };
 
-                                var mainWindow = new MainWindow(); // Передаем UserModel
+                                var mainWindow = new MainWindow(user);
                                 mainWindow.Show();
                                 this.Close();
                             }
@@ -105,11 +109,6 @@ namespace Diplom_Project
                         }
                     }
                 }
-            }
-            catch (NpgsqlException ex)
-            {
-                MessageBox.Show($"Ошибка базы данных: {ex.Message}", "Ошибка",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {

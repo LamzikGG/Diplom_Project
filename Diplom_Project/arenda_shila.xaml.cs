@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Diplom_Project.Models;
 using Diplom_Project.Services;
 using Npgsql;
 
@@ -14,16 +15,18 @@ namespace Diplom_Project
         private List<CartItem> cartItems = new List<CartItem>();
         private decimal totalPrice = 0;
         private int nextItemId = 1;
+        private readonly UserModel _user;
 
-        public arenda_zhilya()
+        public arenda_zhilya(UserModel user)
         {
             InitializeComponent();
+            _user = user;
             LoadAccommodationsFromDatabase();
         }
 
         private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MainWindow mainWindow = new MainWindow();
+            var mainWindow = new MainWindow(_user);
             mainWindow.Show();
             this.Close();
         }
@@ -49,14 +52,9 @@ namespace Diplom_Project
                             string address = reader.GetString(2);
                             decimal price = reader.GetDecimal(3);
 
-                            // Создаем карточку
-                            var border = new Border
-                            {
-                                Style = Resources["HousingCardStyle"] as Style
-                            };
+                            var border = new Border { Style = Resources["HousingCardStyle"] as Style };
                             var stackPanel = new StackPanel();
 
-                            // Картинка
                             var image = new Image
                             {
                                 Source = new BitmapImage(new Uri("/Images/hotel.jpg", UriKind.Relative)),
@@ -65,7 +63,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(image);
 
-                            // Название
                             var nameText = new TextBlock
                             {
                                 Text = name,
@@ -73,7 +70,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(nameText);
 
-                            // Адрес
                             var addressText = new TextBlock
                             {
                                 Text = address,
@@ -81,7 +77,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(addressText);
 
-                            // Цена
                             var priceText = new TextBlock
                             {
                                 Text = $"{price} руб./ночь",
@@ -89,7 +84,6 @@ namespace Diplom_Project
                             };
                             stackPanel.Children.Add(priceText);
 
-                            // Кнопка добавления в корзину
                             var rentButton = new Button
                             {
                                 Content = "Добавить в корзину",
@@ -116,7 +110,6 @@ namespace Diplom_Project
         {
             var button = sender as Button;
             var parent = button.Parent as StackPanel;
-
             string name = ((TextBlock)parent.Children[1]).Text;
             decimal price = decimal.Parse(button.Tag.ToString());
             int accommodationId = int.Parse(button.CommandParameter?.ToString() ?? "0");
@@ -171,13 +164,14 @@ namespace Diplom_Project
                             VALUES (@userId, @accommodationId, CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day', @price)";
                         using (var cmd = new NpgsqlCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", GetCurrentUserId());
+                            cmd.Parameters.AddWithValue("userId", _user.Id);
                             cmd.Parameters.AddWithValue("accommodationId", item.AccommodationId);
                             cmd.Parameters.AddWithValue("price", item.Price);
                             cmd.ExecuteNonQuery();
                         }
                     }
                 }
+
                 MessageBox.Show("Заявка успешно отправлена!", "Успех");
                 cartItems.Clear();
                 totalPrice = 0;
@@ -189,11 +183,6 @@ namespace Diplom_Project
             {
                 MessageBox.Show($"Ошибка при оформлении: {ex.Message}", "Ошибка");
             }
-        }
-
-        private int GetCurrentUserId()
-        {
-            return 1; // Заменить на реальный ID пользователя
         }
     }
 
