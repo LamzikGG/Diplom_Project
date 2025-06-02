@@ -118,6 +118,8 @@ namespace Diplom_Project.Views
     {
         public int BookingId { get; set; }
         public int UserId { get; set; }
+        public string UserName { get; set; }
+        public string UserPhone { get; set; }
         public int AccommodationId { get; set; }
         public string CheckIn { get; set; }
         public string CheckOut { get; set; }
@@ -128,6 +130,8 @@ namespace Diplom_Project.Views
     {
         public int RentalId { get; set; }
         public int UserId { get; set; }
+        public string UserName { get; set; }
+        public string UserPhone { get; set; }
         public int EquipmentId { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }

@@ -72,6 +72,6 @@
         </TabControl>
 
         <!-- Кнопка выхода в левом нижнем углу -->
-        <Button Content="Выход" Width="100" Height="30" HorizontalAlignment="Left" Margin="10,534,0,0" Click="ExitButton_Click"/>
+        <Button Content="Выход" Width="100" Height="30" HorizontalAlignment="Left" Margin="10,524,0,10" Click="ExitButton_Click"/>
     </Grid>
 </Window>

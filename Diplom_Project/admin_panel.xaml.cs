@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using Npgsql;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
+using System.Diagnostics;
 
 namespace Diplom_Project.Views
 {
@@ -128,21 +129,106 @@ namespace Diplom_Project.Views
         {
             if (EquipmentDataGrid.ItemsSource is ObservableCollection<EquipmentModel> equipment)
             {
-                equipment.Add(new EquipmentModel
+                var newItem = new EquipmentModel
                 {
                     Type = "Новый тип",
                     Brand = "Новый бренд",
                     Price = 0
-                });
+                };
+                equipment.Add(newItem);
+
+                // Прокрутка и фокус на новом элементе
+                EquipmentDataGrid.ScrollIntoView(newItem);
+                EquipmentDataGrid.SelectedItem = newItem;
+                EquipmentDataGrid.Focus();
+            }
+            else
+            {
+                // Если коллекция не создана, создаем новую
+                var newEquipment = new ObservableCollection<EquipmentModel>
+                {
+                    new EquipmentModel
+                    {
+                        Type = "Новый тип",
+                        Brand = "Новый бренд",
+                        Price = 0
+                    }
+                };
+                EquipmentDataGrid.ItemsSource = newEquipment;
             }
         }
 
         private void DeleteEquipment_Click(object sender, RoutedEventArgs e)
         {
-            if (EquipmentDataGrid.SelectedItem is EquipmentModel selectedItem &&
-                EquipmentDataGrid.ItemsSource is ObservableCollection<EquipmentModel> equipment)
+            if (EquipmentDataGrid.SelectedItem is EquipmentModel selectedItem)
             {
-                equipment.Remove(selectedItem);
+                var result = MessageBox.Show("Вы уверены, что хотите удалить это оборудование? " +
+                                           "Все связанные записи аренды также будут удалены.",
+                                           "Подтверждение удаления",
+                                           MessageBoxButton.YesNo);
+
+                if (result != MessageBoxResult.Yes) return;
+
+                try
+                {
+                    using (var conn = Database.GetConnection())
+                    {
+                        conn.Open();
+
+                        // Начинаем транзакцию
+                        using (var transaction = conn.BeginTransaction())
+                        {
+                            try
+                            {
+                                // 1. Сначала удаляем все связанные записи аренды
+                                const string deleteRentalsSql = "DELETE FROM rentals WHERE equipment_id = @equipmentId";
+                                using (var cmd = new NpgsqlCommand(deleteRentalsSql, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("equipmentId", selectedItem.EquipmentId);
+                                    int rentalsDeleted = cmd.ExecuteNonQuery();
+
+                                    // Можно показать сколько записей аренды было удалено
+                                    Debug.WriteLine($"Удалено записей аренды: {rentalsDeleted}");
+                                }
+
+                                // 2. Затем удаляем само оборудование
+                                const string deleteEquipmentSql = "DELETE FROM equipment WHERE equipment_id = @equipmentId";
+                                using (var cmd = new NpgsqlCommand(deleteEquipmentSql, conn, transaction))
+                                {
+                                    cmd.Parameters.AddWithValue("equipmentId", selectedItem.EquipmentId);
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Подтверждаем транзакцию
+                                transaction.Commit();
+
+                                // 3. Удаляем из коллекции
+                                if (EquipmentDataGrid.ItemsSource is ObservableCollection<EquipmentModel> equipment)
+                                {
+                                    equipment.Remove(selectedItem);
+                                }
+
+                                MessageBox.Show("Оборудование и связанные записи аренды успешно удалены");
+                            }
+                            catch
+                            {
+                                // Откатываем транзакцию при ошибке
+                                transaction.Rollback();
+                                throw;
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления: {ex.Message}\n\n" +
+                                  "Возможно, оборудование используется в активных арендах " +
+                                  "или произошла другая ошибка базы данных.");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Пожалуйста, выберите оборудование для удаления");
             }
         }
 
@@ -159,6 +245,7 @@ namespace Diplom_Project.Views
                         {
                             if (item.EquipmentId > 0)
                             {
+                                // Обновление существующей записи
                                 const string updateSql = "UPDATE equipment SET type = @type, brand = @brand, price = @price WHERE equipment_id = @id";
                                 using (var cmd = new NpgsqlCommand(updateSql, conn))
                                 {
@@ -171,6 +258,7 @@ namespace Diplom_Project.Views
                             }
                             else
                             {
+                                // Добавление новой записи
                                 const string insertSql = "INSERT INTO equipment (type, brand, price) VALUES (@type, @brand, @price) RETURNING equipment_id";
                                 using (var cmd = new NpgsqlCommand(insertSql, conn))
                                 {
@@ -183,6 +271,7 @@ namespace Diplom_Project.Views
                         }
                     }
                     MessageBox.Show("Оборудование сохранено успешно");
+                    LoadEquipment(); // Обновляем данные после сохранения
                 }
             }
             catch (Exception ex)
@@ -228,21 +317,76 @@ namespace Diplom_Project.Views
         {
             if (AccommodationsDataGrid.ItemsSource is ObservableCollection<AccommodationModel> accommodations)
             {
-                accommodations.Add(new AccommodationModel
+                var newItem = new AccommodationModel
                 {
                     Name = "Новое жильё",
                     Address = "Новый адрес",
                     PricePerNight = 0
-                });
+                };
+                accommodations.Add(newItem);
+
+                AccommodationsDataGrid.ScrollIntoView(newItem);
+                AccommodationsDataGrid.SelectedItem = newItem;
+                AccommodationsDataGrid.Focus();
+            }
+            else
+            {
+                var newAccommodations = new ObservableCollection<AccommodationModel>
+                {
+                    new AccommodationModel
+                    {
+                        Name = "Новое жильё",
+                        Address = "Новый адрес",
+                        PricePerNight = 0
+                    }
+                };
+                AccommodationsDataGrid.ItemsSource = newAccommodations;
             }
         }
 
         private void DeleteAccommodation_Click(object sender, RoutedEventArgs e)
         {
-            if (AccommodationsDataGrid.SelectedItem is AccommodationModel selectedItem &&
-                AccommodationsDataGrid.ItemsSource is ObservableCollection<AccommodationModel> accommodations)
+            if (AccommodationsDataGrid.SelectedItem is AccommodationModel selectedItem)
             {
-                accommodations.Remove(selectedItem);
+                var result = MessageBox.Show("Вы уверены, что хотите удалить это жильё?",
+                                          "Подтверждение удаления",
+                                          MessageBoxButton.YesNo);
+
+                if (result != MessageBoxResult.Yes) return;
+
+                try
+                {
+                    // Удаляем только если элемент уже сохранен в БД
+                    if (selectedItem.AccommodationId > 0)
+                    {
+                        using (var conn = Database.GetConnection())
+                        {
+                            conn.Open();
+                            const string sql = "DELETE FROM accommodations WHERE accommodation_id = @id";
+                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            {
+                                cmd.Parameters.AddWithValue("id", selectedItem.AccommodationId);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+
+                    // Удаляем из коллекции
+                    if (AccommodationsDataGrid.ItemsSource is ObservableCollection<AccommodationModel> accommodations)
+                    {
+                        accommodations.Remove(selectedItem);
+                    }
+
+                    MessageBox.Show("Жильё удалено успешно");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления жилья: {ex.Message}");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Пожалуйста, выберите жильё для удаления");
             }
         }
 
@@ -259,6 +403,7 @@ namespace Diplom_Project.Views
                         {
                             if (item.AccommodationId > 0)
                             {
+                                // Обновление существующей записи
                                 const string updateSql = "UPDATE accommodations SET name = @name, address = @address, price_per_night = @price WHERE accommodation_id = @id";
                                 using (var cmd = new NpgsqlCommand(updateSql, conn))
                                 {
@@ -271,6 +416,7 @@ namespace Diplom_Project.Views
                             }
                             else
                             {
+                                // Добавление новой записи
                                 const string insertSql = "INSERT INTO accommodations (name, address, price_per_night) VALUES (@name, @address, @price) RETURNING accommodation_id";
                                 using (var cmd = new NpgsqlCommand(insertSql, conn))
                                 {
@@ -282,12 +428,13 @@ namespace Diplom_Project.Views
                             }
                         }
                     }
-                    MessageBox.Show("Цены на жильё сохранены успешно");
+                    MessageBox.Show("Жильё сохранено успешно");
+                    LoadAccommodations(); // Обновляем данные после сохранения
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка сохранения цен на жильё: {ex.Message}");
+                MessageBox.Show($"Ошибка сохранения жилья: {ex.Message}");
             }
         }
 
@@ -327,6 +474,7 @@ namespace Diplom_Project.Views
         {
             LoadSellers();
         }
+
         private void ExitButton_Click(object sender, RoutedEventArgs e)
         {
             authorisation mainwindow = new authorisation();
