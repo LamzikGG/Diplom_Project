@@ -19,6 +19,21 @@
                             <DataGridTextColumn Header="Тип" Binding="{Binding Type}" Width="*"/>
                             <DataGridTextColumn Header="Бренд" Binding="{Binding Brand}" Width="*"/>
                             <DataGridTextColumn Header="Цена" Binding="{Binding Price}" Width="*" IsReadOnly="False"/>
+                            <DataGridTemplateColumn Header="Фото" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding ImagePath}" Height="50"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding ImagePath, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                                            <Button Content="..." Width="25" Click="SelectEquipmentImage_Click" Tag="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
@@ -56,6 +71,21 @@
                             <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
                             <DataGridTextColumn Header="Адрес" Binding="{Binding Address}" Width="*"/>
                             <DataGridTextColumn Header="Цена за ночь" Binding="{Binding PricePerNight}" Width="*" IsReadOnly="False"/>
+                            <DataGridTemplateColumn Header="Фото" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding ImagePath}" Height="50"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding ImagePath, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                                            <Button Content="..." Width="25" Click="SelectAccommodationImage_Click" Tag="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
@@ -75,6 +105,22 @@
                             <DataGridTextColumn Header="Сложность" Binding="{Binding Difficulty}" Width="*"/>
                             <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*"/>
                             <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="*"/>
+                            <!-- ВСТАВЬ СЮДА: -->
+                            <DataGridTemplateColumn Header="Фото" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding ImagePath}" Height="50"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                                <DataGridTemplateColumn.CellEditingTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox Text="{Binding ImagePath, UpdateSourceTrigger=PropertyChanged}" Width="120"/>
+                                            <Button Content="..." Width="25" Click="SelectSlopeImage_Click" Tag="{Binding}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellEditingTemplate>
+                            </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
@@ -117,14 +163,16 @@
                         <Grid>
                             <DataGrid x:Name="SlopePricesDataGrid" AutoGenerateColumns="False" CanUserAddRows="True" Margin="0,0,0,40">
                                 <DataGrid.Columns>
-                                    <DataGridComboBoxColumn Header="Трасса" Width="*" 
-                                                            SelectedValueBinding="{Binding SlopeId}"
-                                                            DisplayMemberPath="Name"
-                                                            SelectedValuePath="SlopeId"/>
+                                   <DataGridComboBoxColumn Header="Трасса" Width="*" 
+                                        SelectedValueBinding="{Binding SlopeId}"
+                                        DisplayMemberPath="Name"
+                                        SelectedValuePath="SlopeId"
+                                        ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Resources[Slopes]}"/>
                                     <DataGridComboBoxColumn Header="Сезон" Width="*" 
-                                                            SelectedValueBinding="{Binding SeasonId}"
-                                                            DisplayMemberPath="Name"
-                                                            SelectedValuePath="SeasonId"/>
+                                        SelectedValueBinding="{Binding SeasonId}"
+                                        DisplayMemberPath="Name"
+                                        SelectedValuePath="SeasonId"
+                                        ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=Resources[Seasons]}"/>
                                     <DataGridTextColumn Header="Цена" Binding="{Binding Price}" Width="*"/>
                                 </DataGrid.Columns>
                             </DataGrid>

@@ -37,17 +37,18 @@ namespace Diplom_Project
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    const string sql = "SELECT name, difficulty, description FROM slopes WHERE status = 'open'";
+                    const string sql = "SELECT name, difficulty, description, image_path FROM slopes WHERE status = 'open'";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            GenerateSlopeBlock(
-                                reader.GetString(0),              // name
-                                reader.GetString(1),              // difficulty
-                                reader.IsDBNull(2) ? "" : reader.GetString(2)  // description
-                            );
+                            string name = reader.GetString(0);
+                            string difficulty = reader.GetString(1);
+                            string description = reader.IsDBNull(2) ? "" : reader.GetString(2);
+                            string imagePath = reader.IsDBNull(3) ? null : reader.GetString(3);
+
+                            GenerateSlopeBlock(name, difficulty, description, imagePath);
                         }
                     }
                 }
@@ -59,7 +60,7 @@ namespace Diplom_Project
         }
 
         // Создание UI-блока для каждой трассы
-        private void GenerateSlopeBlock(string name, string difficulty, string description)
+        private void GenerateSlopeBlock(string name, string difficulty, string description, string imagePath)
         {
             var border = new Border
             {
@@ -71,15 +72,15 @@ namespace Diplom_Project
 
             var grid = new Grid();
 
-            // Колонки сетки
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            // Изображение
             var image = new Image
             {
-                Source = new BitmapImage(new Uri("/Image/slope1.jpg", UriKind.Relative)),
+                Source = new BitmapImage(new Uri(
+                    string.IsNullOrEmpty(imagePath) ? "Images/slope1.jpg" : imagePath,
+                    UriKind.RelativeOrAbsolute)),
                 Width = 120,
                 Height = 80,
                 Stretch = Stretch.UniformToFill

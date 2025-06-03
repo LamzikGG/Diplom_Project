@@ -6,6 +6,8 @@ using Npgsql;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
 using System.Collections.Generic;
+using Microsoft.Win32;
+using System.IO;
 
 namespace Diplom_Project.Views
 {
@@ -36,7 +38,7 @@ namespace Diplom_Project.Views
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    const string sql = "SELECT equipment_id, type, brand, price FROM equipment";
+                    const string sql = "SELECT equipment_id, type, brand, price, image_path FROM equipment";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -47,7 +49,8 @@ namespace Diplom_Project.Views
                                 EquipmentId = reader.GetInt32(0),
                                 Type = reader.GetString(1),
                                 Brand = reader.IsDBNull(2) ? "" : reader.GetString(2),
-                                Price = reader.GetDecimal(3)
+                                Price = reader.GetDecimal(3),
+                                ImagePath = reader.IsDBNull(4) ? null : reader.GetString(4) // добавлено!
                             });
                         }
                     }
@@ -59,7 +62,66 @@ namespace Diplom_Project.Views
                 MessageBox.Show($"Ошибка загрузки оборудования: {ex.Message}");
             }
         }
+        private void SelectAccommodationImage_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var accommodation = button?.Tag as AccommodationModel;
+            if (accommodation == null) return;
 
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                string imagesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+                if (!System.IO.Directory.Exists(imagesDir))
+                    System.IO.Directory.CreateDirectory(imagesDir);
+
+                string fileName = System.IO.Path.GetFileName(dialog.FileName);
+                string destPath = System.IO.Path.Combine(imagesDir, fileName);
+
+                if (!System.IO.File.Exists(destPath))
+                    System.IO.File.Copy(dialog.FileName, destPath);
+
+                accommodation.ImagePath = $"Images/{fileName}";
+            }
+        }
+        private void SelectEquipmentImage_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var equipment = button?.Tag as EquipmentModel;
+            if (equipment == null)
+            {
+                MessageBox.Show("Не удалось определить объект оборудования.");
+                return;
+            }
+
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                // Копируем файл в папку Images внутри папки приложения
+                string imagesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+                if (!System.IO.Directory.Exists(imagesDir))
+                    System.IO.Directory.CreateDirectory(imagesDir);
+
+                string fileName = System.IO.Path.GetFileName(dialog.FileName);
+                string destPath = System.IO.Path.Combine(imagesDir, fileName);
+
+                // Если файл с таким именем уже есть, не копируем повторно
+                if (!System.IO.File.Exists(destPath))
+                    System.IO.File.Copy(dialog.FileName, destPath);
+
+                // Сохраняем относительный путь для базы
+                equipment.ImagePath = $"Images/{fileName}";
+
+                // Для отладки
+                MessageBox.Show($"Путь к картинке сохранён: {equipment.ImagePath}");
+            }
+        }
         private void SaveEquipment_Click(object sender, RoutedEventArgs e)
         {
             if (EquipmentDataGrid.ItemsSource is ObservableCollection<EquipmentModel> equipmentList)
@@ -73,30 +135,35 @@ namespace Diplom_Project.Views
                         {
                             if (item.EquipmentId > 0)
                             {
-                                const string sql = "UPDATE equipment SET type = @type, brand = @brand, price = @price WHERE equipment_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                // Обновление существующей записи
+                                const string sql = "UPDATE equipment SET type = @type, brand = @brand, price = @price, image_path = @image WHERE equipment_id = @id";
+                                using (var cmd = new Npgsql.NpgsqlCommand(sql, conn))
                                 {
                                     cmd.Parameters.AddWithValue("type", item.Type);
                                     cmd.Parameters.AddWithValue("brand", item.Brand);
                                     cmd.Parameters.AddWithValue("price", item.Price);
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
                                     cmd.Parameters.AddWithValue("id", item.EquipmentId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
-                                const string sql = "INSERT INTO equipment (type, brand, price) VALUES (@type, @brand, @price) RETURNING equipment_id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                // Добавление новой записи
+                                const string sql = "INSERT INTO equipment (type, brand, price, image_path) VALUES (@type, @brand, @price, @image) RETURNING equipment_id";
+                                using (var cmd = new Npgsql.NpgsqlCommand(sql, conn))
                                 {
                                     cmd.Parameters.AddWithValue("type", item.Type);
                                     cmd.Parameters.AddWithValue("brand", item.Brand);
                                     cmd.Parameters.AddWithValue("price", item.Price);
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
                                     item.EquipmentId = (int)cmd.ExecuteScalar();
                                 }
                             }
                         }
                     }
                     MessageBox.Show("Оборудование сохранено успешно");
+                    LoadEquipment(); // Обновить таблицу после сохранения
                 }
                 catch (Exception ex)
                 {
@@ -162,7 +229,7 @@ namespace Diplom_Project.Views
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    const string sql = "SELECT accommodation_id, name, address, price_per_night FROM accommodations";
+                    const string sql = "SELECT accommodation_id, name, address, price_per_night, image_path FROM accommodations";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -173,7 +240,8 @@ namespace Diplom_Project.Views
                                 AccommodationId = reader.GetInt32(0),
                                 Name = reader.GetString(1),
                                 Address = reader.IsDBNull(2) ? "" : reader.GetString(2),
-                                PricePerNight = reader.GetDecimal(3)
+                                PricePerNight = reader.GetDecimal(3),
+                                ImagePath = reader.IsDBNull(4) ? null : reader.GetString(4)
                             });
                         }
                     }
@@ -185,7 +253,35 @@ namespace Diplom_Project.Views
                 MessageBox.Show($"Ошибка загрузки жилья: {ex.Message}");
             }
         }
+        private void SelectSlopeImage_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var slope = button?.Tag as SlopeModel;
+            if (slope == null)
+            {
+                MessageBox.Show("Не удалось определить объект трассы.");
+                return;
+            }
 
+            var dialog = new Microsoft.Win32.OpenFileDialog
+            {
+                Filter = "Image files (*.png;*.jpg;*.jpeg)|*.png;*.jpg;*.jpeg"
+            };
+            if (dialog.ShowDialog() == true)
+            {
+                string imagesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
+                if (!System.IO.Directory.Exists(imagesDir))
+                    System.IO.Directory.CreateDirectory(imagesDir);
+
+                string fileName = System.IO.Path.GetFileName(dialog.FileName);
+                string destPath = System.IO.Path.Combine(imagesDir, fileName);
+
+                if (!System.IO.File.Exists(destPath))
+                    System.IO.File.Copy(dialog.FileName, destPath);
+
+                slope.ImagePath = $"Images/{fileName}";
+            }
+        }
         private void SaveAccommodationPrices_Click(object sender, RoutedEventArgs e)
         {
             if (AccommodationsDataGrid.ItemsSource is ObservableCollection<AccommodationModel> list)
@@ -199,25 +295,27 @@ namespace Diplom_Project.Views
                         {
                             if (item.AccommodationId > 0)
                             {
-                                const string sql = "UPDATE accommodations SET name = @name, address = @addr, price_per_night = @price WHERE accommodation_id = @id";
+                                const string sql = "UPDATE accommodations SET name = @name, address = @addr, price_per_night = @price, image_path = @image WHERE accommodation_id = @id";
                                 using (var cmd = new NpgsqlCommand(sql, conn))
                                 {
                                     cmd.Parameters.AddWithValue("name", item.Name);
                                     cmd.Parameters.AddWithValue("addr", item.Address);
                                     cmd.Parameters.AddWithValue("price", item.PricePerNight);
                                     cmd.Parameters.AddWithValue("id", item.AccommodationId);
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
-                                const string sql = "INSERT INTO accommodations (name, address, price_per_night) VALUES (@name, @addr, @price) RETURNING accommodation_id";
+                                const string sql = "INSERT INTO accommodations (name, address, price_per_night, image_path) VALUES (@name, @addr, @price, @image) RETURNING accommodation_id";
                                 using (var cmd = new NpgsqlCommand(sql, conn))
                                 {
                                     cmd.Parameters.AddWithValue("name", item.Name);
                                     cmd.Parameters.AddWithValue("addr", item.Address);
                                     cmd.Parameters.AddWithValue("price", item.PricePerNight);
                                     item.AccommodationId = (int)cmd.ExecuteScalar();
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
                                 }
                             }
                         }
@@ -364,7 +462,7 @@ namespace Diplom_Project.Views
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    const string sql = "SELECT slope_id, name, difficulty, status FROM slopes";
+                    const string sql = "SELECT slope_id, name, difficulty, status, description, image_path FROM slopes";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -375,7 +473,8 @@ namespace Diplom_Project.Views
                                 SlopeId = reader.GetInt32(0),
                                 Name = reader.GetString(1),
                                 Difficulty = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                Status = reader.IsDBNull(3) ? null : reader.GetString(3)
+                                Status = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                ImagePath = reader.IsDBNull(5) ? null : reader.GetString(5)
                             });
                         }
                     }

@@ -41,7 +41,7 @@ namespace Diplom_Project
                 using (var conn = Database.GetConnection())
                 {
                     conn.Open();
-                    string sql = "SELECT accommodation_id, name, address, price_per_night FROM accommodations";
+                    string sql = "SELECT accommodation_id, name, address, price_per_night, image_path FROM accommodations";
                     using (var cmd = new NpgsqlCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -51,16 +51,21 @@ namespace Diplom_Project
                             string name = reader.GetString(1);
                             string address = reader.GetString(2);
                             decimal price = reader.GetDecimal(3);
+                            string imagePath = reader.IsDBNull(4) ? null : reader.GetString(4);
+
+                            // Используем путь из базы, если он есть, иначе дефолтную картинку
+                            var image = new Image
+                            {
+                                Source = new BitmapImage(new Uri(
+                                    string.IsNullOrEmpty(imagePath) ? "Images/hotel.jpg" : imagePath,
+                                    UriKind.RelativeOrAbsolute)),
+                                Height = 150,
+                                Stretch = Stretch.UniformToFill
+                            };
 
                             var border = new Border { Style = Resources["HousingCardStyle"] as Style };
                             var stackPanel = new StackPanel();
 
-                            var image = new Image
-                            {
-                                Source = new BitmapImage(new Uri("/Images/hotel.jpg", UriKind.Relative)),
-                                Height = 150,
-                                Stretch = Stretch.UniformToFill
-                            };
                             stackPanel.Children.Add(image);
 
                             var nameText = new TextBlock
