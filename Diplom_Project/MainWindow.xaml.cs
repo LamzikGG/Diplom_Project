@@ -18,6 +18,7 @@ namespace Diplom_Project
         {
             var authWindow = new authorisation();
             authWindow.Show();
+            this.Close();
         }
 
         private void Image1_Click(object sender, RoutedEventArgs e)

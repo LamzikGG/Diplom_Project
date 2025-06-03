@@ -7,9 +7,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <TabControl Grid.Row="0">
-
             <!-- Вкладка изменения цен на оборудование -->
             <TabItem Header="Цены на оборудование">
                 <Grid>
@@ -61,6 +59,26 @@
                         <Button Content="Добавить" Width="100" Height="30" Click="AddAccommodation_Click" Margin="0,0,10,10"/>
                         <Button Content="Удалить" Width="100" Height="30" Click="DeleteAccommodation_Click" Margin="0,0,10,10"/>
                         <Button Content="Сохранить" Width="100" Height="30" Click="SaveAccommodationPrices_Click" Margin="0,0,10,10"/>
+                    </StackPanel>
+                </Grid>
+            </TabItem>
+
+            <!-- Вкладка управления трассами -->
+            <TabItem Header="Трассы">
+                <Grid>
+                    <DataGrid x:Name="SlopesDataGrid" AutoGenerateColumns="False" CanUserAddRows="True" Margin="0,0,0,40" ItemsSource="{Binding}">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Название" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="Сложность" Binding="{Binding Difficulty}" Width="*"/>
+                            <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*"/>
+                            <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="*"/>
+                            <DataGridTextColumn Header="Цена подъемника" Binding="{Binding LiftPrice}" Width="*"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                        <Button Content="Добавить" Width="100" Height="30" Click="AddSlope_Click" Margin="0,0,10,10"/>
+                        <Button Content="Удалить" Width="100" Height="30" Click="DeleteSlope_Click" Margin="0,0,10,10"/>
+                        <Button Content="Сохранить" Width="100" Height="30" Click="SaveSlopes_Click" Margin="0,0,10,10"/>
                     </StackPanel>
                 </Grid>
             </TabItem>

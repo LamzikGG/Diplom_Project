@@ -1,12 +1,7 @@
 ﻿<Window x:Class="Diplom_Project.routes"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Diplom_Project"
-        mc:Ignorable="d"
-        Title="Трассы" Height="600" Width="800"
-        WindowStartupLocation="CenterScreen">
+        Title="Трассы" Height="600" Width="800">
     <Grid Background="#FF0F0F0F">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -32,94 +27,7 @@
 
         <!-- Основное содержимое - блоки с трассами -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="20">
-                <!-- Трасса 1 -->
-                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Source="/Image/slope1.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
-
-                        <StackPanel Grid.Column="1" Margin="15,0">
-                            <TextBlock Text="Чёрная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="Подробная информация" Width="120" Height="30" 
-                                    Click="ShowDetails_Click" Tag="Чёрная трасса"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Трасса 2 -->
-                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Source="/Image/slope2.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
-
-                        <StackPanel Grid.Column="1" Margin="15,0">
-                            <TextBlock Text="Красная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="Подробная информация" Width="120" Height="30" 
-                                    Click="ShowDetails_Click" Tag="Красная трасса"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Трасса 3 -->
-                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Source="/Image/slope3.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
-
-                        <StackPanel Grid.Column="1" Margin="15,0">
-                            <TextBlock Text="Синяя трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="Подробная информация" Width="120" Height="30" 
-                                    Click="ShowDetails_Click" Tag="Синяя трасса"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
-
-                <!-- Трасса 4 -->
-                <Border Background="#FF252525" CornerRadius="10" Margin="0,0,0,20" Padding="15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-
-                        <Image Source="/Image/slope4.jpg" Width="120" Height="80" Stretch="UniformToFill" Grid.Column="0"/>
-
-                        <StackPanel Grid.Column="1" Margin="15,0">
-                            <TextBlock Text="Зелёная трасса" Foreground="White" FontSize="16" FontWeight="Bold"/>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
-                            <Button Content="Подробная информация" Width="120" Height="30" 
-                                    Click="ShowDetails_Click" Tag="Зелёная трасса"/>
-                        </StackPanel>
-                    </Grid>
-                </Border>
+            <StackPanel x:Name="SlopesStackPanel" Margin="20">
             </StackPanel>
         </ScrollViewer>
     </Grid>

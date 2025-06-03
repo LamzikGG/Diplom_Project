@@ -1,104 +1,129 @@
-﻿using System.Windows;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
 using Diplom_Project.Models;
+using Diplom_Project.Services;
+using Npgsql;
 
 namespace Diplom_Project
 {
     public partial class routes : Window
     {
-        private readonly UserModel _user;
+        private UserModel _user;
 
+        // Конструктор с пользователем
         public routes(UserModel user)
         {
             InitializeComponent();
             _user = user;
+            LoadSlopes();
         }
 
-        private void Logo_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        // Конструктор по умолчанию
+        public routes()
         {
-            var mainWindow = new MainWindow(_user);
-            mainWindow.Show();
-            this.Close();
+            InitializeComponent();
+            LoadSlopes();
         }
 
-        private void ShowDetails_Click(object sender, RoutedEventArgs e)
+        private void LoadSlopes()
         {
-            if (sender is Button button && button.Tag is string trackName)
+            try
             {
-                var detailsWindow = new Window
+                using (var conn = Database.GetConnection())
                 {
-                    Title = $"Подробности: {trackName}",
-                    Width = 400,
-                    Height = 300,
-                    WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                    Owner = this,
-                    ResizeMode = ResizeMode.NoResize,
-                    Background = new SolidColorBrush(Color.FromRgb(37, 37, 37)),
-                    Content = new ScrollViewer
+                    conn.Open();
+                    const string sql = "SELECT name, description, lift_price FROM slopes WHERE status = 'open'";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        Content = new TextBlock
+                        while (reader.Read())
                         {
-                            Text = GetTrackDetails(trackName),
-                            TextWrapping = TextWrapping.Wrap,
-                            Padding = new Thickness(15),
-                            Foreground = Brushes.White,
-                            FontSize = 14
+                            GenerateSlopeBlock(reader.GetString(0), reader.GetString(1), reader.GetDecimal(2));
                         }
                     }
-                };
-
-                detailsWindow.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки трасс: {ex.Message}");
             }
         }
 
-        private string GetTrackDetails(string trackName)
+        private void GenerateSlopeBlock(string name, string description, decimal liftPrice)
         {
-            switch (trackName)
+            var border = new Border
             {
-                case "Чёрная трасса":
-                    return "Чёрная трасса - самая сложная трасса на курорте.\n\n" +
-                           "Характеристики:\n" +
-                           "- Длина: 3500 метров\n" +
-                           "- Перепад высот: 850 метров\n" +
-                           "- Средний уклон: 28°\n" +
-                           "- Максимальный уклон: 45°\n\n" +
-                           "Описание:\n" +
-                           "Трасса для опытных лыжников и сноубордистов. Имеет крутые спуски, узкие участки и естественные препятствия. Рекомендуется только для профессионалов.";
+                Background = System.Windows.Media.Brushes.DarkGray,
+                CornerRadius = new System.Windows.CornerRadius(10),
+                Margin = new Thickness(0, 0, 0, 20),
+                Padding = new Thickness(15)
+            };
 
-                case "Красная трасса":
-                    return "Красная трасса - трасса для продвинутых лыжников.\n\n" +
-                           "Характеристики:\n" +
-                           "- Длина: 2800 метров\n" +
-                           "- Перепад высот: 650 метров\n" +
-                           "- Средний уклон: 22°\n" +
-                           "- Максимальный уклон: 35°\n\n" +
-                           "Описание:\n" +
-                           "Трасса с разнообразным рельефом, подходит для тех, кто уверенно стоит на лыжах. Имеет несколько крутых участков и широкие повороты.";
+            var grid = new Grid();
 
-                case "Синяя трасса":
-                    return "Синяя трасса - трасса средней сложности.\n\n" +
-                           "Характеристики:\n" +
-                           "- Длина: 2000 метров\n" +
-                           "- Перепад высот: 450 метров\n" +
-                           "- Средний уклон: 15°\n" +
-                           "- Максимальный уклон: 25°\n\n" +
-                           "Описание:\n" +
-                           "Идеальный выбор для тех, кто уже освоил базовые навыки катания. Трасса широкая, с плавными поворотами и умеренным уклоном.";
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-                case "Зелёная трасса":
-                    return "Зелёная трасса - трасса для начинающих.\n\n" +
-                           "Характеристики:\n" +
-                           "- Длина: 1500 метров\n" +
-                           "- Перепад высот: 250 метров\n" +
-                           "- Средний уклон: 8°\n" +
-                           "- Максимальный уклон: 12°\n\n" +
-                           "Описание:\n" +
-                           "Просторная и пологая трасса, идеально подходящая для обучения и первых спусков. Полностью безопасна для новичков.";
+            var image = new Image
+            {
+                Source = new BitmapImage(new Uri("/Image/slope1.jpg", UriKind.Relative)),
+                Width = 120,
+                Height = 80,
+                Stretch = System.Windows.Media.Stretch.UniformToFill
+            };
+            Grid.SetColumn(image, 0);
 
-                default:
-                    return "Информация о данной трассе отсутствует.";
-            }
+            var stackPanel1 = new StackPanel { Margin = new Thickness(15, 0, 0, 0) };
+            var textBlock1 = new TextBlock
+            {
+                Text = name,
+                Foreground = System.Windows.Media.Brushes.White,
+                FontSize = 16,
+                FontWeight = FontWeights.Bold
+            };
+            stackPanel1.Children.Add(textBlock1);
+            Grid.SetColumn(stackPanel1, 1);
+
+            var stackPanel2 = new StackPanel();
+            var button = new Button
+            {
+                Content = "Подробная информация",
+                Width = 120,
+                Height = 30
+            };
+            button.Click += (sender, e) => ShowDetails(name, description, liftPrice);
+            stackPanel2.Children.Add(button);
+            Grid.SetColumn(stackPanel2, 2);
+
+            grid.Children.Add(image);
+            grid.Children.Add(stackPanel1);
+            grid.Children.Add(stackPanel2);
+
+            border.Child = grid;
+
+            SlopesStackPanel.Children.Add(border); // Теперь корректно добавляем
+        }
+
+        private void ShowDetails(string name, string description, decimal price)
+        {
+            MessageBox.Show($"Название: {name}\n\nОписание: {description}\n\nЦена подъемника: {price} руб.", "Информация о трассе");
+        }
+
+        private void Logo_Click(object sender, MouseButtonEventArgs e)
+        {
+            this.Close();
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Diplom_Project.Views
             LoadEquipment();
             LoadAccommodations();
             LoadReviews(); // Загрузка отзывов
+            LoadSlopes();   // Загрузка трасс
         }
 
         // === Работа с оборудованием ===
@@ -113,16 +114,13 @@ namespace Diplom_Project.Views
                                     int rentalsDeleted = cmd.ExecuteNonQuery();
                                     Debug.WriteLine($"Удалено записей аренды: {rentalsDeleted}");
                                 }
-
                                 const string deleteEquipmentSql = "DELETE FROM equipment WHERE equipment_id = @id";
                                 using (var cmd = new NpgsqlCommand(deleteEquipmentSql, conn, transaction))
                                 {
                                     cmd.Parameters.AddWithValue("id", selectedItem.EquipmentId);
                                     cmd.ExecuteNonQuery();
                                 }
-
                                 transaction.Commit();
-
                                 if (EquipmentDataGrid.ItemsSource is ObservableCollection<EquipmentModel> equipment)
                                 {
                                     equipment.Remove(selectedItem);
@@ -280,7 +278,6 @@ namespace Diplom_Project.Views
                             }
                         }
                     }
-
                     if (AccommodationsDataGrid.ItemsSource is ObservableCollection<AccommodationModel> accommodations)
                     {
                         accommodations.Remove(selectedItem);
@@ -373,7 +370,6 @@ namespace Diplom_Project.Views
                                 Id = reader.GetInt32(1),
                                 FirstName = reader.GetString(5) // Используем поле full_name из запроса
                             };
-
                             reviews.Add(new Review
                             {
                                 ReviewId = reader.GetInt32(0),
@@ -407,7 +403,6 @@ namespace Diplom_Project.Views
                                             "Подтверждение удаления",
                                             MessageBoxButton.YesNo);
                 if (result != MessageBoxResult.Yes) return;
-
                 try
                 {
                     using (var conn = Database.GetConnection())
@@ -420,12 +415,10 @@ namespace Diplom_Project.Views
                             cmd.ExecuteNonQuery();
                         }
                     }
-
                     if (ReviewsDataGrid.ItemsSource is ObservableCollection<Review> reviews)
                     {
                         reviews.Remove(selectedReview);
                     }
-
                     MessageBox.Show("Отзыв успешно удален");
                 }
                 catch (Exception ex)
@@ -436,6 +429,165 @@ namespace Diplom_Project.Views
             else
             {
                 MessageBox.Show("Пожалуйста, выберите отзыв для удаления");
+            }
+        }
+
+        // === Работа с трассами ===
+        private void LoadSlopes()
+        {
+            try
+            {
+                var slopes = new ObservableCollection<SlopeModel>();
+                using (var conn = Database.GetConnection())
+                {
+                    conn.Open();
+                    const string sql = "SELECT slope_id, name, difficulty, status, description, lift_price FROM slopes";
+                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            slopes.Add(new SlopeModel
+                            {
+                                SlopeId = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                Difficulty = reader.GetString(2),
+                                Status = reader.GetString(3),
+                                Description = reader.IsDBNull(4) ? "" : reader.GetString(4),
+                                LiftPrice = reader.GetDecimal(5)
+                            });
+                        }
+                    }
+                }
+                SlopesDataGrid.ItemsSource = slopes;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки трасс: {ex.Message}");
+            }
+        }
+
+        private void AddSlope_Click(object sender, RoutedEventArgs e)
+        {
+            if (SlopesDataGrid.ItemsSource is ObservableCollection<SlopeModel> slopes)
+            {
+                var newItem = new SlopeModel
+                {
+                    Name = "Новая трасса",
+                    Difficulty = "medium",
+                    Status = "open",
+                    Description = "",
+                    LiftPrice = 0
+                };
+                slopes.Add(newItem);
+                SlopesDataGrid.ScrollIntoView(newItem);
+                SlopesDataGrid.SelectedItem = newItem;
+                SlopesDataGrid.Focus();
+            }
+            else
+            {
+                var newSlopes = new ObservableCollection<SlopeModel>
+                {
+                    new SlopeModel
+                    {
+                        Name = "Новая трасса",
+                        Difficulty = "medium",
+                        Status = "open",
+                        Description = "",
+                        LiftPrice = 0
+                    }
+                };
+                SlopesDataGrid.ItemsSource = newSlopes;
+            }
+        }
+
+        private void DeleteSlope_Click(object sender, RoutedEventArgs e)
+        {
+            if (SlopesDataGrid.SelectedItem is SlopeModel selectedItem)
+            {
+                var result = MessageBox.Show("Вы уверены, что хотите удалить эту трассу?",
+                                             "Подтверждение удаления",
+                                             MessageBoxButton.YesNo);
+                if (result != MessageBoxResult.Yes) return;
+                try
+                {
+                    if (selectedItem.SlopeId > 0)
+                    {
+                        using (var conn = Database.GetConnection())
+                        {
+                            conn.Open();
+                            const string sql = "DELETE FROM slopes WHERE slope_id = @id";
+                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            {
+                                cmd.Parameters.AddWithValue("id", selectedItem.SlopeId);
+                                cmd.ExecuteNonQuery();
+                            }
+                        }
+                    }
+                    if (SlopesDataGrid.ItemsSource is ObservableCollection<SlopeModel> slopes)
+                    {
+                        slopes.Remove(selectedItem);
+                    }
+                    MessageBox.Show("Трасса удалена успешно");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка удаления трассы: {ex.Message}");
+                }
+            }
+            else
+            {
+                MessageBox.Show("Пожалуйста, выберите трассу для удаления");
+            }
+        }
+
+        private void SaveSlopes_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (SlopesDataGrid.ItemsSource is ObservableCollection<SlopeModel> slopes)
+                {
+                    using (var conn = Database.GetConnection())
+                    {
+                        conn.Open();
+                        foreach (var item in slopes)
+                        {
+                            if (item.SlopeId > 0)
+                            {
+                                const string updateSql = "UPDATE slopes SET name = @name, difficulty = @diff, status = @status, description = @desc, lift_price = @price WHERE slope_id = @id";
+                                using (var cmd = new NpgsqlCommand(updateSql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("name", item.Name);
+                                    cmd.Parameters.AddWithValue("diff", item.Difficulty);
+                                    cmd.Parameters.AddWithValue("status", item.Status);
+                                    cmd.Parameters.AddWithValue("desc", item.Description ?? "");
+                                    cmd.Parameters.AddWithValue("price", item.LiftPrice);
+                                    cmd.Parameters.AddWithValue("id", item.SlopeId);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                            else
+                            {
+                                const string insertSql = "INSERT INTO slopes (name, difficulty, status, description, lift_price) VALUES (@name, @diff, @status, @desc, @price) RETURNING slope_id";
+                                using (var cmd = new NpgsqlCommand(insertSql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("name", item.Name);
+                                    cmd.Parameters.AddWithValue("diff", item.Difficulty);
+                                    cmd.Parameters.AddWithValue("status", item.Status);
+                                    cmd.Parameters.AddWithValue("desc", item.Description ?? "");
+                                    cmd.Parameters.AddWithValue("price", item.LiftPrice);
+                                    item.SlopeId = (int)cmd.ExecuteScalar();
+                                }
+                            }
+                        }
+                    }
+                    MessageBox.Show("Трассы сохранены успешно");
+                    LoadSlopes(); // Обновляем данные после сохранения
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка сохранения трасс: {ex.Message}");
             }
         }
 
