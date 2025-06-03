@@ -7,6 +7,5 @@
         public string Difficulty { get; set; }
         public string Status { get; set; }
         public string Description { get; set; }
-        public decimal LiftPrice { get; set; }
     }
 }
