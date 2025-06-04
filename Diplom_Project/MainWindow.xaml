@@ -52,7 +52,7 @@
                 <Border DockPanel.Dock="Left"
                         Width="50" Height="50" CornerRadius="5" Background="White"
                         MouseLeftButtonDown="Logo_Click" Cursor="Hand">
-                    <Image Source="/Image/image.jpeg" Stretch="Uniform"/>
+                    <Image Source="/Images/image.jpeg" Stretch="Uniform"/>
                 </Border>
 
                 <!-- Заголовок по центру -->
@@ -97,7 +97,7 @@
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image1_Click">
-                            <Image Source="/Image/image2.jpg" Stretch="UniformToFill"
+                            <Image Source="/Images/image2.jpg" Stretch="UniformToFill"
                                    Width="280" Height="280"/>
                         </Button>
                         <TextBlock Text="Трассы" HorizontalAlignment="Center" 
@@ -111,7 +111,7 @@
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image2_Click">
-                            <Image Source="/Image/image3.jpg" Stretch="UniformToFill"
+                            <Image Source="/Images/image3.jpg" Stretch="UniformToFill"
                                    Width="280" Height="280"/>
                         </Button>
                         <TextBlock Text="Аренда жилья" HorizontalAlignment="Center" 
@@ -125,7 +125,7 @@
                     <StackPanel VerticalAlignment="Center">
                         <Button Style="{StaticResource ImageButtonStyle}" 
                                 Click="Image3_Click">
-                            <Image Source="/Image/image (2).jpg" Stretch="UniformToFill"
+                            <Image Source="/Images/image (2).jpg" Stretch="UniformToFill"
                                    Width="280" Height="280"/>
                         </Button>
                         <TextBlock Text="Аренда экипировки" HorizontalAlignment="Center" 

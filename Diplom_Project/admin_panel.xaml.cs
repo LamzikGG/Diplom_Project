@@ -8,6 +8,7 @@ using Diplom_Project.Services;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.IO;
+using System.Linq;
 
 namespace Diplom_Project.Views
 {
@@ -253,7 +254,7 @@ namespace Diplom_Project.Views
                 MessageBox.Show($"Ошибка загрузки жилья: {ex.Message}");
             }
         }
-        private void SelectSlopeImage_Click(object sender, RoutedEventArgs e)
+        private void SelectSlopeImage_Click(object sender, RoutedEventArgs e) // Постановка картинки
         {
             var button = sender as Button;
             var slope = button?.Tag as SlopeModel;
@@ -487,9 +488,116 @@ namespace Diplom_Project.Views
             }
         }
 
-        private void AddSlope_Click(object sender, RoutedEventArgs e) { /* ... */ }
-        private void DeleteSlope_Click(object sender, RoutedEventArgs e) { /* ... */ }
-        private void SaveSlopes_Click(object sender, RoutedEventArgs e) { /* ... */ }
+        private void AddSlope_Click(object sender, RoutedEventArgs e)
+        {
+            if (SlopesDataGrid.ItemsSource is ObservableCollection<SlopeModel> slopes)
+            {
+                var newItem = new SlopeModel
+                {
+                    Name = "Новая трасса",
+                    Difficulty = "Средняя",
+                    Status = "Открыта",
+                    Description = "",
+                    ImagePath = null
+                };
+                slopes.Add(newItem);
+                SlopesDataGrid.ScrollIntoView(newItem);
+                SlopesDataGrid.SelectedItem = newItem;
+            }
+        }
+
+        private void DeleteSlope_Click(object sender, RoutedEventArgs e)
+        {
+            if (SlopesDataGrid.SelectedItem is SlopeModel selected)
+            {
+                var result = MessageBox.Show("Удалить трассу?", "Подтверждение", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    if (selected.SlopeId > 0)
+                    {
+                        try
+                        {
+                            using (var conn = Database.GetConnection())
+                            {
+                                conn.Open();
+                                const string sql = "DELETE FROM slopes WHERE slope_id = @id";
+                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("id", selected.SlopeId);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Ошибка удаления: {ex.Message}");
+                        }
+                    }
+                    (SlopesDataGrid.ItemsSource as ObservableCollection<SlopeModel>)?.Remove(selected);
+                }
+            }
+        }
+
+        private void SaveSlopes_Click(object sender, RoutedEventArgs e)
+        {
+            if (SlopesDataGrid.ItemsSource is ObservableCollection<SlopeModel> slopes)
+            {
+                // Проверка сложности
+                var allowed = new[] { "easy", "medium", "hard" };
+                foreach (var item in slopes)
+                {
+                    if (string.IsNullOrWhiteSpace(item.Difficulty) || !allowed.Contains(item.Difficulty.Trim().ToLower()))
+                    {
+                        MessageBox.Show("Сложность может быть только: easy, medium, hard", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                }
+
+                try
+                {
+                    using (var conn = Database.GetConnection())
+                    {
+                        conn.Open();
+                        foreach (var item in slopes)
+                        {
+                            if (item.SlopeId > 0)
+                            {
+                                const string updateSql = "UPDATE slopes SET name = @name, difficulty = @difficulty, status = @status, description = @description, image_path = @image WHERE slope_id = @id";
+                                using (var cmd = new NpgsqlCommand(updateSql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("name", item.Name);
+                                    cmd.Parameters.AddWithValue("difficulty", (object)item.Difficulty ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("status", (object)item.Status ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("description", (object)item.Description ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("id", item.SlopeId);
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                            else
+                            {
+                                const string insertSql = "INSERT INTO slopes (name, difficulty, status, description, image_path) VALUES (@name, @difficulty, @status, @description, @image) RETURNING slope_id";
+                                using (var cmd = new NpgsqlCommand(insertSql, conn))
+                                {
+                                    cmd.Parameters.AddWithValue("name", item.Name);
+                                    cmd.Parameters.AddWithValue("difficulty", (object)item.Difficulty ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("status", (object)item.Status ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("description", (object)item.Description ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
+                                    item.SlopeId = (int)cmd.ExecuteScalar();
+                                }
+                            }
+                        }
+                    }
+                    MessageBox.Show("Трассы успешно сохранены");
+                    LoadSlopes();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ошибка сохранения трасс: {ex.Message}");
+                }
+            }
+        }
 
         // === Работа с сезонами ===
         private void LoadSeasons()

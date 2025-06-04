@@ -105,7 +105,6 @@
                             <DataGridTextColumn Header="Сложность" Binding="{Binding Difficulty}" Width="*"/>
                             <DataGridTextColumn Header="Статус" Binding="{Binding Status}" Width="*"/>
                             <DataGridTextColumn Header="Описание" Binding="{Binding Description}" Width="*"/>
-                            <!-- ВСТАВЬ СЮДА: -->
                             <DataGridTemplateColumn Header="Фото" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

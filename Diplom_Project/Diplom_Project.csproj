@@ -17,6 +17,7 @@
     <Deterministic>true</Deterministic>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,7 +30,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -286,25 +286,25 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\image.jpeg" />
+    <Resource Include="Images\image.jpeg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\image1.jpg" />
-    <Resource Include="Image\image4.jpg" />
-    <Resource Include="Image\image5.jpg" />
+    <Resource Include="Images\image1.jpg" />
+    <Resource Include="Images\image4.jpg" />
+    <Resource Include="Images\image5.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\image2.jpg" />
-    <Resource Include="Image\image3.jpg" />
+    <Resource Include="Images\image2.jpg" />
+    <Resource Include="Images\image3.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Image\image %281%29.jpg" />
+    <Content Include="Images\image %281%29.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Image\image %282%29.jpg" />
+    <Content Include="Images\image %282%29.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Image\unnamed.jpg" />
+    <Resource Include="Images\unnamed.jpg" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.7.2">
