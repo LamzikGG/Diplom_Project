@@ -98,7 +98,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                     <Border Width="50" Height="50" CornerRadius="5" Background="White" 
                             MouseLeftButtonDown="Logo_Click" Cursor="Hand">
-                        <Image Source="/Image/image.jpeg" Stretch="Uniform"/>
+                        <Image Source="/Images/image.jpeg" Stretch="Uniform" Height="50" VerticalAlignment="Top"/>
                     </Border>
                     <TextBlock Text="Аренда жилья" 
                                Foreground="White" 

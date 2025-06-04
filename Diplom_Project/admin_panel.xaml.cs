@@ -104,7 +104,6 @@ namespace Diplom_Project.Views
             };
             if (dialog.ShowDialog() == true)
             {
-                // Копируем файл в папку Images внутри папки приложения
                 string imagesDir = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Images");
                 if (!System.IO.Directory.Exists(imagesDir))
                     System.IO.Directory.CreateDirectory(imagesDir);
@@ -112,15 +111,11 @@ namespace Diplom_Project.Views
                 string fileName = System.IO.Path.GetFileName(dialog.FileName);
                 string destPath = System.IO.Path.Combine(imagesDir, fileName);
 
-                // Если файл с таким именем уже есть, не копируем повторно
                 if (!System.IO.File.Exists(destPath))
                     System.IO.File.Copy(dialog.FileName, destPath);
 
-                // Сохраняем относительный путь для базы
-                equipment.ImagePath = $"Images/{fileName}";
-
-                // Для отладки
-                MessageBox.Show($"Путь к картинке сохранён: {equipment.ImagePath}");
+                equipment.ImagePath = $"/Images/{fileName}";
+                EquipmentDataGrid.Items.Refresh();
             }
         }
         private void SaveEquipment_Click(object sender, RoutedEventArgs e)
@@ -254,7 +249,7 @@ namespace Diplom_Project.Views
                 MessageBox.Show($"Ошибка загрузки жилья: {ex.Message}");
             }
         }
-        private void SelectSlopeImage_Click(object sender, RoutedEventArgs e) // Постановка картинки
+        private void SelectSlopeImage_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as Button;
             var slope = button?.Tag as SlopeModel;
@@ -280,7 +275,8 @@ namespace Diplom_Project.Views
                 if (!System.IO.File.Exists(destPath))
                     System.IO.File.Copy(dialog.FileName, destPath);
 
-                slope.ImagePath = $"Images/{fileName}";
+                slope.ImagePath = $"/Images/{fileName}";
+                SlopesDataGrid.Items.Refresh(); // <--- добавьте эту строку!
             }
         }
         private void SaveAccommodationPrices_Click(object sender, RoutedEventArgs e)
