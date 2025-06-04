@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows;
-using Npgsql;
+using System.Data.SQLite;
 using Diplom_Project.Services;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Diplom_Project
 {
@@ -10,6 +12,8 @@ namespace Diplom_Project
         public Registration()
         {
             InitializeComponent();
+            // Инициализация базы данных при создании окна
+            Database.Initialize();
         }
 
         private void btnRegister_Click(object sender, RoutedEventArgs e)
@@ -18,8 +22,8 @@ namespace Diplom_Project
             string lastName = txtLastName.Text.Trim();
             string phone = txtPhone.Text.Trim();
             string login = txtLogin.Text.Trim();
-            string password = txtPassword.Password.Trim();
-            string confirmPassword = txtConfirmPassword.Password.Trim();
+            string password = txtPassword.Password;
+            string confirmPassword = txtConfirmPassword.Password;
 
             if (string.IsNullOrWhiteSpace(login) ||
                 string.IsNullOrWhiteSpace(password) ||
@@ -27,13 +31,15 @@ namespace Diplom_Project
                 string.IsNullOrWhiteSpace(firstName) ||
                 string.IsNullOrWhiteSpace(lastName))
             {
-                MessageBox.Show("Все обязательные поля должны быть заполнены!");
+                MessageBox.Show("Все обязательные поля должны быть заполнены!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             if (password != confirmPassword)
             {
-                MessageBox.Show("Пароли не совпадают!");
+                MessageBox.Show("Пароли не совпадают!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -44,23 +50,25 @@ namespace Diplom_Project
                     conn.Open();
 
                     string sql = @"
-                INSERT INTO users 
-                (username, password_hash, first_name, last_name, phone) 
-                VALUES 
-                (@login, crypt(@password, gen_salt('bf')), @firstName, @lastName, @phone)";
+                        INSERT INTO users 
+                        (username, password_hash, first_name, last_name, phone, role) 
+                        VALUES 
+                        (@login, @password_hash, @firstName, @lastName, @phone, 'client')";
 
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     {
                         cmd.Parameters.AddWithValue("@login", login);
-                        cmd.Parameters.AddWithValue("@password", password);
+                        cmd.Parameters.AddWithValue("@password_hash", HashPassword(password));
                         cmd.Parameters.AddWithValue("@firstName", firstName);
                         cmd.Parameters.AddWithValue("@lastName", lastName);
-                        cmd.Parameters.AddWithValue("@phone", phone ?? (object)DBNull.Value); // если телефон пустой — NULL
+                        cmd.Parameters.AddWithValue("@phone", string.IsNullOrWhiteSpace(phone) ? (object)DBNull.Value : phone);
 
                         int rowsAffected = cmd.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Регистрация успешна!");
+                            MessageBox.Show("Регистрация успешна!", "Успех",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+
                             var authWindow = new authorisation();
                             authWindow.Show();
                             this.Close();
@@ -68,21 +76,24 @@ namespace Diplom_Project
                     }
                 }
             }
-            catch (NpgsqlException ex)
+            catch (SQLiteException ex) when (ex.Message.Contains("UNIQUE"))
             {
-                if (ex.Message.Contains("duplicate key value violates unique constraint") ||
-                    ex.Message.Contains("уже существует"))
-                {
-                    MessageBox.Show("Пользователь с таким логином уже существует.");
-                }
-                else
-                {
-                    MessageBox.Show($"Ошибка базы данных: {ex.Message}");
-                }
+                MessageBox.Show("Пользователь с таким логином уже существует!", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Неизвестная ошибка: {ex.Message}");
+                MessageBox.Show($"Ошибка при регистрации: {ex.Message}", "Ошибка",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private static string HashPassword(string password)
+        {
+            using (var sha = SHA256.Create())
+            {
+                var bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(bytes).Replace("-", "").ToLower();
             }
         }
 
@@ -90,6 +101,7 @@ namespace Diplom_Project
         {
             var authWindow = new authorisation();
             authWindow.Show();
+            this.Close();
         }
     }
 }

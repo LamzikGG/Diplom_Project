@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
-using Npgsql;
+using System.Data.SQLite;
 
 namespace Diplom_Project
 {
@@ -42,7 +42,7 @@ namespace Diplom_Project
                 {
                     conn.Open();
                     string sql = "SELECT accommodation_id, name, address, price_per_night, image_path FROM accommodations";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -166,12 +166,12 @@ namespace Diplom_Project
                     {
                         string sql = @"
                             INSERT INTO bookings (user_id, accommodation_id, check_in, check_out, total_price)
-                            VALUES (@userId, @accommodationId, CURRENT_DATE, CURRENT_DATE + INTERVAL '1 day', @price)";
-                        using (var cmd = new NpgsqlCommand(sql, conn))
+                            VALUES (@userId, @accommodationId, CURRENT_DATE, DATE('now', '+1 day'), @price)";
+                        using (var cmd = new SQLiteCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", _user.Id);
-                            cmd.Parameters.AddWithValue("accommodationId", item.AccommodationId);
-                            cmd.Parameters.AddWithValue("price", item.Price);
+                            cmd.Parameters.AddWithValue("@userId", _user.Id);
+                            cmd.Parameters.AddWithValue("@accommodationId", item.AccommodationId);
+                            cmd.Parameters.AddWithValue("@price", item.Price);
                             cmd.ExecuteNonQuery();
                         }
                     }

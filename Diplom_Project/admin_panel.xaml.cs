@@ -2,13 +2,13 @@
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using Npgsql;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using System.IO;
 using System.Linq;
+using System.Data.SQLite;
 
 namespace Diplom_Project.Views
 {
@@ -40,7 +40,7 @@ namespace Diplom_Project.Views
                 {
                     conn.Open();
                     const string sql = "SELECT equipment_id, type, brand, price, image_path FROM equipment";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -51,7 +51,7 @@ namespace Diplom_Project.Views
                                 Type = reader.GetString(1),
                                 Brand = reader.IsDBNull(2) ? "" : reader.GetString(2),
                                 Price = reader.GetDecimal(3),
-                                ImagePath = reader.IsDBNull(4) ? null : reader.GetString(4) // добавлено!
+                                ImagePath = reader.IsDBNull(4) ? null : reader.GetString(4)
                             });
                         }
                     }
@@ -114,7 +114,7 @@ namespace Diplom_Project.Views
                 if (!System.IO.File.Exists(destPath))
                     System.IO.File.Copy(dialog.FileName, destPath);
 
-                equipment.ImagePath = $"/Images/{fileName}";
+                equipment.ImagePath = $"Images/{fileName}";
                 EquipmentDataGrid.Items.Refresh();
             }
         }
@@ -133,27 +133,28 @@ namespace Diplom_Project.Views
                             {
                                 // Обновление существующей записи
                                 const string sql = "UPDATE equipment SET type = @type, brand = @brand, price = @price, image_path = @image WHERE equipment_id = @id";
-                                using (var cmd = new Npgsql.NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("type", item.Type);
-                                    cmd.Parameters.AddWithValue("brand", item.Brand);
-                                    cmd.Parameters.AddWithValue("price", item.Price);
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("id", item.EquipmentId);
+                                    cmd.Parameters.AddWithValue("@type", item.Type);
+                                    cmd.Parameters.AddWithValue("@brand", item.Brand);
+                                    cmd.Parameters.AddWithValue("@price", item.Price);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@id", item.EquipmentId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
                                 // Добавление новой записи
-                                const string sql = "INSERT INTO equipment (type, brand, price, image_path) VALUES (@type, @brand, @price, @image) RETURNING equipment_id";
-                                using (var cmd = new Npgsql.NpgsqlCommand(sql, conn))
+                                const string sql = "INSERT INTO equipment (type, brand, price, image_path) VALUES (@type, @brand, @price, @image)";
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("type", item.Type);
-                                    cmd.Parameters.AddWithValue("brand", item.Brand);
-                                    cmd.Parameters.AddWithValue("price", item.Price);
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
-                                    item.EquipmentId = (int)cmd.ExecuteScalar();
+                                    cmd.Parameters.AddWithValue("@type", item.Type);
+                                    cmd.Parameters.AddWithValue("@brand", item.Brand);
+                                    cmd.Parameters.AddWithValue("@price", item.Price);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.ExecuteNonQuery();
+                                    item.EquipmentId = (int)conn.LastInsertRowId;
                                 }
                             }
                         }
@@ -199,9 +200,9 @@ namespace Diplom_Project.Views
                             {
                                 conn.Open();
                                 const string sql = "DELETE FROM equipment WHERE equipment_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("id", selected.EquipmentId);
+                                    cmd.Parameters.AddWithValue("@id", selected.EquipmentId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
@@ -226,7 +227,7 @@ namespace Diplom_Project.Views
                 {
                     conn.Open();
                     const string sql = "SELECT accommodation_id, name, address, price_per_night, image_path FROM accommodations";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -275,8 +276,8 @@ namespace Diplom_Project.Views
                 if (!System.IO.File.Exists(destPath))
                     System.IO.File.Copy(dialog.FileName, destPath);
 
-                slope.ImagePath = $"/Images/{fileName}";
-                SlopesDataGrid.Items.Refresh(); // <--- добавьте эту строку!
+                slope.ImagePath = $"Images/{fileName}";
+                SlopesDataGrid.Items.Refresh();
             }
         }
         private void SaveAccommodationPrices_Click(object sender, RoutedEventArgs e)
@@ -293,26 +294,27 @@ namespace Diplom_Project.Views
                             if (item.AccommodationId > 0)
                             {
                                 const string sql = "UPDATE accommodations SET name = @name, address = @addr, price_per_night = @price, image_path = @image WHERE accommodation_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("name", item.Name);
-                                    cmd.Parameters.AddWithValue("addr", item.Address);
-                                    cmd.Parameters.AddWithValue("price", item.PricePerNight);
-                                    cmd.Parameters.AddWithValue("id", item.AccommodationId);
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@name", item.Name);
+                                    cmd.Parameters.AddWithValue("@addr", item.Address);
+                                    cmd.Parameters.AddWithValue("@price", item.PricePerNight);
+                                    cmd.Parameters.AddWithValue("@id", item.AccommodationId);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
-                                const string sql = "INSERT INTO accommodations (name, address, price_per_night, image_path) VALUES (@name, @addr, @price, @image) RETURNING accommodation_id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                const string sql = "INSERT INTO accommodations (name, address, price_per_night, image_path) VALUES (@name, @addr, @price, @image)";
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("name", item.Name);
-                                    cmd.Parameters.AddWithValue("addr", item.Address);
-                                    cmd.Parameters.AddWithValue("price", item.PricePerNight);
-                                    item.AccommodationId = (int)cmd.ExecuteScalar();
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@name", item.Name);
+                                    cmd.Parameters.AddWithValue("@addr", item.Address);
+                                    cmd.Parameters.AddWithValue("@price", item.PricePerNight);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.ExecuteNonQuery();
+                                    item.AccommodationId = (int)conn.LastInsertRowId;
                                 }
                             }
                         }
@@ -357,9 +359,9 @@ namespace Diplom_Project.Views
                             {
                                 conn.Open();
                                 const string sql = "DELETE FROM accommodations WHERE accommodation_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("id", selected.AccommodationId);
+                                    cmd.Parameters.AddWithValue("@id", selected.AccommodationId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
@@ -384,7 +386,7 @@ namespace Diplom_Project.Views
                 {
                     conn.Open();
                     const string sql = "SELECT r.review_id, u.username, r.rating, r.content, r.created_at FROM reviews r JOIN users u ON r.user_id = u.id";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -426,9 +428,9 @@ namespace Diplom_Project.Views
                         {
                             conn.Open();
                             const string sql = "DELETE FROM reviews WHERE review_id = @id";
-                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            using (var cmd = new SQLiteCommand(sql, conn))
                             {
-                                cmd.Parameters.AddWithValue("id", selected.ReviewId);
+                                cmd.Parameters.AddWithValue("@id", selected.ReviewId);
                                 cmd.ExecuteNonQuery();
                             }
                         }
@@ -460,7 +462,7 @@ namespace Diplom_Project.Views
                 {
                     conn.Open();
                     const string sql = "SELECT slope_id, name, difficulty, status, description, image_path FROM slopes";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -471,6 +473,7 @@ namespace Diplom_Project.Views
                                 Name = reader.GetString(1),
                                 Difficulty = reader.IsDBNull(2) ? null : reader.GetString(2),
                                 Status = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                Description = reader.IsDBNull(4) ? null : reader.GetString(4),
                                 ImagePath = reader.IsDBNull(5) ? null : reader.GetString(5)
                             });
                         }
@@ -517,9 +520,9 @@ namespace Diplom_Project.Views
                             {
                                 conn.Open();
                                 const string sql = "DELETE FROM slopes WHERE slope_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("id", selected.SlopeId);
+                                    cmd.Parameters.AddWithValue("@id", selected.SlopeId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
@@ -559,28 +562,29 @@ namespace Diplom_Project.Views
                             if (item.SlopeId > 0)
                             {
                                 const string updateSql = "UPDATE slopes SET name = @name, difficulty = @difficulty, status = @status, description = @description, image_path = @image WHERE slope_id = @id";
-                                using (var cmd = new NpgsqlCommand(updateSql, conn))
+                                using (var cmd = new SQLiteCommand(updateSql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("name", item.Name);
-                                    cmd.Parameters.AddWithValue("difficulty", (object)item.Difficulty ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("status", (object)item.Status ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("description", (object)item.Description ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("id", item.SlopeId);
+                                    cmd.Parameters.AddWithValue("@name", item.Name);
+                                    cmd.Parameters.AddWithValue("@difficulty", (object)item.Difficulty ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@status", (object)item.Status ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@description", (object)item.Description ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@id", item.SlopeId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
-                                const string insertSql = "INSERT INTO slopes (name, difficulty, status, description, image_path) VALUES (@name, @difficulty, @status, @description, @image) RETURNING slope_id";
-                                using (var cmd = new NpgsqlCommand(insertSql, conn))
+                                const string insertSql = "INSERT INTO slopes (name, difficulty, status, description, image_path) VALUES (@name, @difficulty, @status, @description, @image)";
+                                using (var cmd = new SQLiteCommand(insertSql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("name", item.Name);
-                                    cmd.Parameters.AddWithValue("difficulty", (object)item.Difficulty ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("status", (object)item.Status ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("description", (object)item.Description ?? DBNull.Value);
-                                    cmd.Parameters.AddWithValue("image", (object)item.ImagePath ?? DBNull.Value);
-                                    item.SlopeId = (int)cmd.ExecuteScalar();
+                                    cmd.Parameters.AddWithValue("@name", item.Name);
+                                    cmd.Parameters.AddWithValue("@difficulty", (object)item.Difficulty ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@status", (object)item.Status ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@description", (object)item.Description ?? DBNull.Value);
+                                    cmd.Parameters.AddWithValue("@image", (object)item.ImagePath ?? DBNull.Value);
+                                    cmd.ExecuteNonQuery();
+                                    item.SlopeId = (int)conn.LastInsertRowId;
                                 }
                             }
                         }
@@ -605,7 +609,7 @@ namespace Diplom_Project.Views
                 {
                     conn.Open();
                     const string sql = "SELECT season_id, name, start_date, end_date FROM seasons";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -648,7 +652,7 @@ namespace Diplom_Project.Views
                         JOIN slopes s ON sp.slope_id = s.slope_id
                         JOIN seasons se ON sp.season_id = se.season_id";
 
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -684,7 +688,7 @@ namespace Diplom_Project.Views
             {
                 conn.Open();
                 const string sql = "SELECT slope_id, name FROM slopes";
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var cmd = new SQLiteCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -707,7 +711,7 @@ namespace Diplom_Project.Views
             {
                 conn.Open();
                 const string sql = "SELECT season_id, name FROM seasons";
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var cmd = new SQLiteCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -737,24 +741,25 @@ namespace Diplom_Project.Views
                             if (item.PriceId > 0)
                             {
                                 const string updateSql = "UPDATE slope_prices SET slope_id = @slope, season_id = @season, price = @price WHERE price_id = @id";
-                                using (var cmd = new NpgsqlCommand(updateSql, conn))
+                                using (var cmd = new SQLiteCommand(updateSql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("slope", item.SlopeId);
-                                    cmd.Parameters.AddWithValue("season", item.SeasonId);
-                                    cmd.Parameters.AddWithValue("price", item.Price);
-                                    cmd.Parameters.AddWithValue("id", item.PriceId);
+                                    cmd.Parameters.AddWithValue("@slope", item.SlopeId);
+                                    cmd.Parameters.AddWithValue("@season", item.SeasonId);
+                                    cmd.Parameters.AddWithValue("@price", item.Price);
+                                    cmd.Parameters.AddWithValue("@id", item.PriceId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }
                             else
                             {
-                                const string insertSql = "INSERT INTO slope_prices (slope_id, season_id, price) VALUES (@slope, @season, @price) RETURNING price_id";
-                                using (var cmd = new NpgsqlCommand(insertSql, conn))
+                                const string insertSql = "INSERT INTO slope_prices (slope_id, season_id, price) VALUES (@slope, @season, @price)";
+                                using (var cmd = new SQLiteCommand(insertSql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("slope", item.SlopeId);
-                                    cmd.Parameters.AddWithValue("season", item.SeasonId);
-                                    cmd.Parameters.AddWithValue("price", item.Price);
-                                    item.PriceId = (int)cmd.ExecuteScalar();
+                                    cmd.Parameters.AddWithValue("@slope", item.SlopeId);
+                                    cmd.Parameters.AddWithValue("@season", item.SeasonId);
+                                    cmd.Parameters.AddWithValue("@price", item.Price);
+                                    cmd.ExecuteNonQuery();
+                                    item.PriceId = (int)conn.LastInsertRowId;
                                 }
                             }
                         }
@@ -801,9 +806,9 @@ namespace Diplom_Project.Views
                             {
                                 conn.Open();
                                 const string sql = "DELETE FROM slope_prices WHERE price_id = @id";
-                                using (var cmd = new NpgsqlCommand(sql, conn))
+                                using (var cmd = new SQLiteCommand(sql, conn))
                                 {
-                                    cmd.Parameters.AddWithValue("id", selectedItem.PriceId);
+                                    cmd.Parameters.AddWithValue("@id", selectedItem.PriceId);
                                     cmd.ExecuteNonQuery();
                                 }
                             }

@@ -1,9 +1,9 @@
 ﻿using Diplom_Project.Models;
-using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Data.SQLite;
 
 namespace Diplom_Project.Services
 {
@@ -19,7 +19,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = @"
@@ -71,7 +71,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = @"
@@ -123,7 +123,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = @"
@@ -166,19 +166,18 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = @"
                             INSERT INTO reviews (user_id, content, rating)
-                            VALUES (@userId, @content, @rating)
-                            RETURNING review_id";
+                            VALUES (@userId, @content, @rating)";
                         cmd.Parameters.AddWithValue("@userId", review.UserId);
                         cmd.Parameters.AddWithValue("@content", review.Content);
                         cmd.Parameters.AddWithValue("@rating", review.Rating);
 
-                        var newId = (int)cmd.ExecuteScalar();
-                        return newId > 0;
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
                     }
                 }
                 catch (Exception ex)
@@ -198,7 +197,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = "DELETE FROM reviews WHERE review_id = @reviewId";
@@ -225,7 +224,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = "SELECT AVG(rating) FROM reviews";
@@ -251,7 +250,7 @@ namespace Diplom_Project.Services
                 try
                 {
                     conn.Open();
-                    using (var cmd = new NpgsqlCommand())
+                    using (var cmd = new SQLiteCommand())
                     {
                         cmd.Connection = conn;
                         cmd.CommandText = "SELECT COUNT(*) FROM reviews";

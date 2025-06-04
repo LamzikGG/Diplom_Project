@@ -3,7 +3,7 @@ using System.Data;
 using System.Windows;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
-using Npgsql;
+using System.Data.SQLite;
 
 namespace Diplom_Project.Views
 {
@@ -29,7 +29,7 @@ namespace Diplom_Project.Views
             SELECT b.booking_id, u.first_name, u.last_name, u.phone, b.accommodation_id, b.check_in, b.check_out, b.total_price 
             FROM bookings b
             JOIN users u ON b.user_id = u.id";
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var cmd = new SQLiteCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -61,7 +61,7 @@ namespace Diplom_Project.Views
             FROM rentals r
             JOIN users u ON r.user_id = u.id
             JOIN equipment e ON r.equipment_id = e.equipment_id";
-                using (var cmd = new NpgsqlCommand(sql, conn))
+                using (var cmd = new SQLiteCommand(sql, conn))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -96,9 +96,9 @@ namespace Diplom_Project.Views
                         {
                             conn.Open();
                             string sql = "DELETE FROM bookings WHERE booking_id = @id";
-                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            using (var cmd = new SQLiteCommand(sql, conn))
                             {
-                                cmd.Parameters.AddWithValue("id", booking.BookingId);
+                                cmd.Parameters.AddWithValue("@id", booking.BookingId);
                                 cmd.ExecuteNonQuery();
                             }
                         }
@@ -126,9 +126,9 @@ namespace Diplom_Project.Views
                         {
                             conn.Open();
                             string sql = "DELETE FROM rentals WHERE rental_id = @id";
-                            using (var cmd = new NpgsqlCommand(sql, conn))
+                            using (var cmd = new SQLiteCommand(sql, conn))
                             {
-                                cmd.Parameters.AddWithValue("id", rental.RentalId);
+                                cmd.Parameters.AddWithValue("@id", rental.RentalId);
                                 cmd.ExecuteNonQuery();
                             }
                         }

@@ -1,11 +1,15 @@
 ﻿using System.Windows;
 using System;
+using Diplom_Project.Services;
 
 public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+
+        // Инициализация структуры базы данных (создание таблиц)
+        Database.Initialize();
 
         AppDomain.CurrentDomain.UnhandledException += (sender, args) =>
         {

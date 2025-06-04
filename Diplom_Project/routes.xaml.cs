@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Npgsql;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
 using System.Windows.Media.Imaging;
+using System.Data.SQLite;
 
 namespace Diplom_Project
 {
@@ -38,7 +38,7 @@ namespace Diplom_Project
                 {
                     conn.Open();
                     const string sql = "SELECT name, difficulty, description, image_path FROM slopes WHERE status = 'open'";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

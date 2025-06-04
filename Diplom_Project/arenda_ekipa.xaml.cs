@@ -8,7 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Diplom_Project.Models;
 using Diplom_Project.Services;
-using Npgsql;
+using System.Data.SQLite;
 
 namespace Diplom_Project
 {
@@ -76,7 +76,7 @@ namespace Diplom_Project
                 {
                     conn.Open();
                     string sql = "SELECT equipment_id, brand, type, price FROM equipment";
-                    using (var cmd = new NpgsqlCommand(sql, conn))
+                    using (var cmd = new SQLiteCommand(sql, conn))
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
@@ -212,11 +212,11 @@ namespace Diplom_Project
                         string sql = @"
                             INSERT INTO rentals (user_id, equipment_id, start_time, end_time, total_price)
                             VALUES (@userId, @equipmentId, CURRENT_TIMESTAMP, NULL, @price)";
-                        using (var cmd = new NpgsqlCommand(sql, conn))
+                        using (var cmd = new SQLiteCommand(sql, conn))
                         {
-                            cmd.Parameters.AddWithValue("userId", _user.Id);
-                            cmd.Parameters.AddWithValue("equipmentId", item.EquipmentId);
-                            cmd.Parameters.AddWithValue("price", item.Price);
+                            cmd.Parameters.AddWithValue("@userId", _user.Id);
+                            cmd.Parameters.AddWithValue("@equipmentId", item.EquipmentId);
+                            cmd.Parameters.AddWithValue("@price", item.Price);
                             cmd.ExecuteNonQuery();
                         }
                     }
